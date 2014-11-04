@@ -1,3 +1,8 @@
 TODO
 tmp
 *.pyc
+patent_list-logging.conf
+patent_detail-logging.conf
+patent_db-logging.conf
+input
+output
