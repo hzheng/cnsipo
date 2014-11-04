@@ -66,6 +66,7 @@ def insert_data(conn, cursor, stmt, batch_vals, failed_vals):
     try:
         cursor.executemany(stmt, batch_vals)
         conn.commit()
+        batch_vals[:] = []
         return
     except psycopg2.IntegrityError as e: #forgiveable
         logger.warn("duplicate data: {}".format(e))
@@ -73,10 +74,10 @@ def insert_data(conn, cursor, stmt, batch_vals, failed_vals):
         logger.error("bad data: {}".format(e))
     except psycopg2.DatabaseError as e: # unexpected
         logger.error("unexpected database error: {}".format(e))
-    finally:
-        batch_vals[:] = []
 
+    #failed
     failed_vals.extend(batch_vals)
+    batch_vals[:] = []
     conn.rollback()
 
 
