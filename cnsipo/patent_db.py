@@ -54,7 +54,8 @@ FIELDS = (APP_NO, "name", "inventor", "applicant", "app_date", "app_pub_no",
         "app_pub_date", "int_cl", "address", "digest", "agency", "agent",
         "app_year")
          #"priority", "native_priority", "init_app", "pct_app_data",
-         #"pct_pub_data", "pct_stage_date", "bio_protection", 'comp_file"
+         #"pct_pub_data", "pct_stage_date", "bio_protection",
+         #"comp_file", 'mod_lit_pub_date'
 
 
 def create_statement(table):
@@ -149,7 +150,7 @@ def main(argv=None):
             help="database password")
     parser.add_option("-H", "--host", dest="host", default="localhost",
             help="database host")
-    parser.add_option("-P", "--patent_table",
+    parser.add_option("-t", "--patent_table",
             dest="patent_table", default="patent",
             help="patent table name")
     parser.add_option("-i", "--input-dir", dest="input_dir", default="input",
@@ -193,6 +194,7 @@ def main(argv=None):
                     error_file=error_file+year, start=start, end=end,
                     batch_size=batch_size, dry_run=dry_run)
     return 0
+
 
 if __name__ == '__main__':
     sys.exit(main())

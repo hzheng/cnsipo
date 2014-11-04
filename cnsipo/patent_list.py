@@ -44,6 +44,8 @@ def init_params(year, kind, input_dir):
             'strWord': "申请日=BETWEEN['{0}','{0}']".format(year),
             'pageNow': 1,
             }
+    if kind == 'syxx': # ugly, huh?
+        params['selected'] = "xxsq"
     params["num" + kind.upper()] = 0 # important
     try:
         input_file = "{}/{}-{}.html".format(input_dir, kind, year)
@@ -69,7 +71,8 @@ def init_params(year, kind, input_dir):
                 pages += 1
             return params, pages
     except KeyError:
-        raise ContentError()
+        logger.warn("an error page for year: {}, kind: {}".format(year, kind))
+        raise ContentError("key error")
     except FORGIVEN_ERROR as e:
         logger.debug("FAIL(may retry) with the year: {}, kind: {}({})".format(
             year, kind, e))
@@ -104,9 +107,6 @@ def query(params, year, page_now, dirname, timeout, dry_run=False):
         if resp.status_code != requests.codes.ok:
             raise Exception("bad status code: {}".format(resp.status_code))
 
-        #with open('out1/'+ year + '_' + str(page_now) + '.html', 'w') as f:
-            #for chunk in resp.iter_content(CHUNK_SIZE):
-                #f.write(chunk)
         with open(output_path, 'w') as f:
             for patent_id in set(
                     re.findall("javascript:zl_xm\('([^']*)'", resp.text)):

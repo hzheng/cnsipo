@@ -23,24 +23,29 @@ from utils import retry, JobQueue, threaded
 from shared import get_logger, ContentError, FORGIVEN_ERROR
 
 
-KINDS = ['detail', 'transaction']
+DETAIL_KINDS = ['detail', 'transaction']
+KINDS = ['fmgb', 'fmsq', 'syxx', 'wgsq']
+STR_SRC = ['fmmost', 'fmmost', 'xxmost', 'wgmost']
+STR_WHERE = ['GB', 'SQ', 'GB', 'SQ']
 DELAY = 3
-RETRIES = 10000
+RETRIES = 1000
 
 logger = get_logger()
 
 
-def detail_params(patent_id):
+def detail_params(patent_id, kind):
     params = {
-            'strSources': "fmmost",
-            'strWhere': "申请号='{}' and GBINDEX=1".format(patent_id),
+            'strSources': STR_SRC[kind],
+            'strWhere': "申请号='{}' and {}INDEX=1".format(
+                patent_id, STR_WHERE[kind]),
             'strLicenseCode': "",
             'pageNow': 1,
             }
     return "http://epub.sipo.gov.cn/patentdetail.action", params
 
 
-def detail_parse(bs):
+def detail_parse(bs, kind):
+    ### TODO: not work for kind 'wgsq'
     details = {}
     tbl = bs.table.table
     for row in tbl.findAll('tr'):
@@ -52,14 +57,14 @@ def detail_parse(bs):
     return details
 
 
-def transaction_params(patent_id):
+def transaction_params(patent_id, kind):
     params = {
             'an': "{}".format(patent_id),
             }
     return "http://epub.sipo.gov.cn/fullTran.action", params
 
 
-def transaction_parse(bs):
+def transaction_parse(bs, kind):
     trans = []
     for tbl in bs.findAll('table'):
         t = tbl.table
@@ -75,7 +80,7 @@ def transaction_parse(bs):
 
 
 @retry(FORGIVEN_ERROR, tries=RETRIES, delay=DELAY, backoff=1, logger=logger)
-def query(get_params, parse,
+def query(get_params, parse, kind,
         patent_id, dirname, timeout, check_level, dry_run=False):
     if not os.path.isdir(dirname):
         os.makedirs(dirname)
@@ -94,18 +99,19 @@ def query(get_params, parse,
 
     logger.debug(msg)
     try:
-        url, params = get_params(patent_id)
+        url, params = get_params(patent_id, kind)
         resp = requests.post(url, params=params, timeout=timeout)
         bs = BeautifulSoup(resp.text)
-        result = parse(bs)
+        result = parse(bs, kind)
         if not result: #empty
             raise ContentError("no valid data found")
         with open(output_path, 'w') as f:
             json.dump(result, f, ensure_ascii=False)
             f.write("\n")
         logger.info("DONE with the patent: {}".format(patent_id))
-    except AttributeError:
-        raise ContentError()
+    except AttributeError as e:
+        logger.warn("an error page for the patent: ({})".format(patent_id))
+        raise ContentError("attribute error")
     except FORGIVEN_ERROR as e:
         logger.debug("FAIL(may retry) with the patent: {}({})".format(
             patent_id, e))
@@ -122,9 +128,11 @@ def query(get_params, parse,
 def main():
     usage = "usage: %prog [options] yearOrId1 [yearOrId2 ...]"
     parser = OptionParser(usage)
-    parser.add_option("-k", "--detail-kind", dest="detail_kind", type="int",
+    parser.add_option("-k", "--kind", dest="kind", type="int", default="1",
+            help="patent type(1-4)")
+    parser.add_option("-K", "--detail-kind", dest="detail_kind", type="int",
             default="1",
-            help="1: detail, 2: transcation")
+            help="1: detail, 2: transaction")
     parser.add_option("-i", "--input-dir", dest="input_dir", default="input",
             help="input directory(contains ID files)")
     parser.add_option("-o", "--output-dir",
@@ -150,13 +158,15 @@ def main():
         parser.error("missing arguments")
 
     get_params, parse = None, None
+    kind_index = options.kind - 1
+    kind = KINDS[kind_index]
     try:
-        kind = KINDS[options.detail_kind - 1]
-        get_params = globals()[kind + "_params"]
-        parse = globals()[kind + "_parse"]
+        detail_kind = DETAIL_KINDS[options.detail_kind - 1]
+        get_params = globals()[detail_kind + "_params"]
+        parse = globals()[detail_kind + "_parse"]
     except:
-        parser.error("kind should be an integer between 1 and {}". format(
-            len(KINDS)))
+        parser.error("detail_kind should be an integer between 1 and {}".format(
+            len(DETAIL_KINDS)))
 
     input_dir = options.input_dir
     output_dir = options.output_dir
@@ -171,20 +181,23 @@ def main():
         if len(args[0]) == 4: # assumed years
             for year in args:
                 dirname = os.path.join(output_dir, year)
-                print "start on patents' {} in year {}".format(kind, year)
+                print "start on patents' {}(kind: {}) in year {}".format(
+                        detail_kind, kind, year)
                 with open(os.path.join(input_dir, year)) as f:
                     i = 1
                     for line in f:
                         i += 1
                         if i > start and (end < 0 or i <= end):
-                            job_queue.add_task(query, get_params, parse,
+                            job_queue.add_task(query,
+                                    get_params, parse, kind_index,
                                     line.strip(), dirname, timeout=timeout,
                                     check_level=check_level, dry_run=dry_run)
         else: # assumed ids
             for patent_id in args:
-                print "start on patent {}'s {}".format(patent_id, kind)
+                print "start on patent {}'s {}(kind: {})".format(
+                        patent_id, detail_kind, kind)
                 dirname = output_dir
-                job_queue.add_task(query, get_params, parse,
+                job_queue.add_task(query, get_params, parse, kind_index,
                         patent_id, dirname, timeout=timeout,
                         check_level=check_level, dry_run=dry_run)
     return 0
