@@ -51,8 +51,7 @@ FIELDS_MAP = {
 }
 
 FIELDS = (APP_NO, "name", "inventor", "applicant", "app_date", "app_pub_no",
-        "app_pub_date", "int_cl", "address", "digest", "agency", "agent",
-        "app_year")
+        "app_pub_date", "int_cl", "address", "digest", "agency", "agent")
          #"priority", "native_priority", "init_app", "pct_app_data",
          #"pct_pub_data", "pct_stage_date", "bio_protection",
          #"comp_file", 'mod_lit_pub_date'
@@ -107,7 +106,6 @@ def import_detail(conn, stmt, year, input_dir, include_file, exclude_file,
 
             with open(os.path.join(dirname, detail_file), 'r') as f:
                 vals = dict.fromkeys(FIELDS)
-                vals['app_year'] = year # to be removed
                 try:
                     for k, v in json.load(f).items():
                         fld_name, fld_type = FIELDS_MAP[k]
@@ -142,9 +140,12 @@ def import_detail(conn, stmt, year, input_dir, include_file, exclude_file,
 def main(argv=None):
     usage = "usage: %prog [options] yearOrId1 [yearOrId2 ...]"
     parser = OptionParser(usage)
+    import getpass
+    username = getpass.getuser()
+   
     parser.add_option("-d", "--database", dest="database", default="cnsipo",
             help="database name")
-    parser.add_option("-u", "--user", dest="user",
+    parser.add_option("-u", "--user", dest="user", default=username,
             help="database username")
     parser.add_option("-p", "--password", dest="password",
             help="database password")

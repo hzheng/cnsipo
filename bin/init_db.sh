@@ -68,10 +68,9 @@ create_db() {
             app_pub_date date,
             int_cl       varchar(2500),
             address      varchar(120),
-            digest       varchar(2000),
+            digest       varchar(2500),
             agency       varchar(120),
-            agent        varchar(110),
-            app_year     char(4)
+            agent        varchar(110)
     );
 EOF
 }
