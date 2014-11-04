@@ -129,7 +129,7 @@ def main(argv=None):
     usage = "usage: %prog [options] year"
     parser = OptionParser(usage)
 
-    parser.add_option("-k", "--kind", dest="kind", default="1",
+    parser.add_option("-k", "--kind", dest="kind", type="int", default="1",
             help="patent type(1-4)")
     parser.add_option("-i", "--input-dir", dest="input_dir", default="input",
             help="input directory(save downloaded pages)")
@@ -156,11 +156,10 @@ def main(argv=None):
     if not os.path.isdir(output_dir):
         os.makedirs(output_dir)
     try:
-        kind = KINDS[int(options.kind) - 1]
+        kind = KINDS[options.kind - 1]
     except:
         parser.error("kind should be an integer between 1 and {}". format(
             len(KINDS)))
-
 
     dry_run = options.dry_run
     timeout = int(options.timeout)

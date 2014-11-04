@@ -22,6 +22,7 @@ import ConfigParser
 
 import requests
 
+
 LOGGER_NAME = "patent"
 
 
