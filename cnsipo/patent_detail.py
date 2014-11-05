@@ -20,10 +20,9 @@ from optparse import OptionParser
 from bs4 import BeautifulSoup
 
 from utils import retry, JobQueue, threaded
-from shared import get_logger, ContentError, FORGIVEN_ERROR
+from shared import get_logger, ContentError, FORGIVEN_ERROR, DETAIL_KINDS
 
 
-DETAIL_KINDS = ['detail', 'transaction']
 KINDS = ['fmgb', 'fmsq', 'syxx', 'wgsq']
 STR_SRC = ['fmmost', 'fmmost', 'xxmost', 'wgmost']
 STR_WHERE = ['GB', 'SQ', 'GB', 'SQ']
@@ -132,7 +131,7 @@ def main():
             help="patent type(1-4)")
     parser.add_option("-K", "--detail-kind", dest="detail_kind", type="int",
             default="1",
-            help="1: detail, 2: transaction")
+            help="1: {} 2: {}".format(*DETAIL_KINDS))
     parser.add_option("-i", "--input-dir", dest="input_dir", default="input",
             help="input directory(contains ID files)")
     parser.add_option("-o", "--output-dir",
@@ -158,8 +157,8 @@ def main():
         parser.error("missing arguments")
 
     get_params, parse = None, None
-    kind_index = options.kind - 1
-    kind = KINDS[kind_index]
+    kind = options.kind - 1
+    kind_str = KINDS[kind]
     try:
         detail_kind = DETAIL_KINDS[options.detail_kind - 1]
         get_params = globals()[detail_kind + "_params"]
@@ -182,22 +181,22 @@ def main():
             for year in args:
                 dirname = os.path.join(output_dir, year)
                 print "start on patents' {}(kind: {}) in year {}".format(
-                        detail_kind, kind, year)
+                        detail_kind, kind_str, year)
                 with open(os.path.join(input_dir, year)) as f:
                     i = 1
                     for line in f:
                         i += 1
                         if i > start and (end < 0 or i <= end):
                             job_queue.add_task(query,
-                                    get_params, parse, kind_index,
+                                    get_params, parse, kind,
                                     line.strip(), dirname, timeout=timeout,
                                     check_level=check_level, dry_run=dry_run)
         else: # assumed ids
             for patent_id in args:
                 print "start on patent {}'s {}(kind: {})".format(
-                        patent_id, detail_kind, kind)
+                        patent_id, detail_kind, kind_str)
                 dirname = output_dir
-                job_queue.add_task(query, get_params, parse, kind_index,
+                job_queue.add_task(query, get_params, parse, kind,
                         patent_id, dirname, timeout=timeout,
                         check_level=check_level, dry_run=dry_run)
     return 0

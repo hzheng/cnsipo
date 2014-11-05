@@ -55,3 +55,6 @@ FORGIVEN_ERROR = (requests.exceptions.HTTPError,
         socket.timeout,
         socket.error,
         ContentError)
+
+
+DETAIL_KINDS = ['detail', 'transaction']

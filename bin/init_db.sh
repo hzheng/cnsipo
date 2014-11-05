@@ -9,11 +9,11 @@ bail() {
 } 
 
 ## help message
-declare -r HELP_MSG="Usage: $SCRIPT_NAME [OPTION]... [ARG]...
+declare -r HELP_MSG="Usage: $SCRIPT_NAME [OPTION]... d|t
   -h    display this help and exit
   -d    database name
   -p    database password
-  -t    table name
+  -t    table prefix
   -u    database user name
 "
 
@@ -29,7 +29,7 @@ usage() {
 
 dbname="cnsipo"
 username="$USER"
-tblname="patent"
+tblprefix="patent_"
 
 while getopts ":hd:p:t:u:" opt; do
     case $opt in
@@ -45,7 +45,7 @@ while getopts ":hd:p:t:u:" opt; do
             pwd=$OPTARG
             ;;
         t)
-            tblname=$OPTARG
+            tblprefix=$OPTARG
             ;;
         \?)
             usage "Invalid option: -$OPTARG \n";;
@@ -53,11 +53,11 @@ while getopts ":hd:p:t:u:" opt; do
 done
 
 shift $(($OPTIND - 1))
-#[[ "$#" -lt 1 ]] && usage "Too few arguments\n"
+[[ "$#" -lt 1 ]] && usage "Too few arguments\n"
 
-create_db() {
+create_detail_db() {
     PGPASSWORD=$pwd psql $dbname $username << EOF
-        CREATE TABLE $tblname(
+        CREATE TABLE ${tblprefix}detail(
             patent_id    SERIAL PRIMARY KEY  NOT NULL,
             app_no       varchar(28) UNIQUE,
             name         varchar(150),
@@ -75,4 +75,22 @@ create_db() {
 EOF
 }
 
-create_db
+create_transaction_db() {
+    PGPASSWORD=$pwd psql $dbname $username << EOF
+        CREATE TABLE ${tblprefix}transaction(
+            trans_id    SERIAL PRIMARY KEY  NOT NULL,
+            app_no      varchar(28) NOT NULL REFERENCES ${tblprefix}detail (app_no),
+            data_type    varchar(200),
+            pub_date     date
+    );
+EOF
+}
+
+case $1 in 
+    d)
+        create_detail_db;;
+    t)
+        create_transaction_db;;
+    *)
+        usage "Invalid argument: $1\n";;
+esac

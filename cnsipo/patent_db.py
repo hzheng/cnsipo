@@ -19,13 +19,13 @@ from optparse import OptionParser
 
 import psycopg2
 
-from shared import get_logger
+from shared import get_logger, DETAIL_KINDS
 
 logger = get_logger()
 
 APP_NO = 'app_no'
 
-FIELDS_MAP = {
+FIELDS_MAP = [{
     u'申请号': (APP_NO, str),
     u'发明名称': ('name', str),
     u'发明人': ('inventor', str),
@@ -48,18 +48,23 @@ FIELDS_MAP = {
     u'生物保藏': ('bio_protection', None),
     u'对比文件': ('comp_file', None),
     u'更正文献出版日': ('mod_lit_pub_date', None),
-}
+    }, {
+    u'事务数据公告日': ('pub_date', datetime.date),
+   u'事务数据类型': ('data_type', str),
+}]
 
-FIELDS = (APP_NO, "name", "inventor", "applicant", "app_date", "app_pub_no",
-        "app_pub_date", "int_cl", "address", "digest", "agency", "agent")
+FIELDS = [(APP_NO, "name", "inventor", "applicant", "app_date", "app_pub_no",
+        "app_pub_date", "int_cl", "address", "digest", "agency", "agent"),
          #"priority", "native_priority", "init_app", "pct_app_data",
          #"pct_pub_data", "pct_stage_date", "bio_protection",
          #"comp_file", 'mod_lit_pub_date'
+        (APP_NO, "pub_date", "data_type")]
 
 
-def create_statement(table):
+def create_statement(table, detail_kind):
+    flds = FIELDS[detail_kind]
     return "INSERT INTO {} ({}) VALUES ({});".format(table,
-            ",".join(FIELDS), ",".join(["%(" + i + ")s" for i in FIELDS]))
+            ",".join(flds), ",".join(["%(" + i + ")s" for i in flds]))
 
 
 def insert_data(conn, cursor, stmt, batch_vals, failed_vals):
@@ -81,12 +86,27 @@ def insert_data(conn, cursor, stmt, batch_vals, failed_vals):
     conn.rollback()
 
 
-def import_detail(conn, stmt, year, input_dir, include_file, exclude_file,
+def parse_data(detail_map, flds_map, flds, batch_vals):
+    vals = dict.fromkeys(flds)
+    for k, v in detail_map.items():
+        fld_name, fld_type = flds_map[k]
+        if not fld_type: #ignore
+            continue
+        if fld_type is datetime.date:
+            v = datetime.datetime.strptime(v, '%Y.%m.%d')
+        vals[fld_name] = v
+    batch_vals.append(vals)
+    return vals
+
+
+def import_data(conn, stmt, detail_kind, year, input_dir, include_file, exclude_file,
         error_file, start=0, end=-1, batch_size=1000, dry_run=False):
     dirname = os.path.join(input_dir, year)
     i = 0
     batch_vals = []
     failed_vals = []
+    flds = FIELDS[detail_kind]
+    flds_map = FIELDS_MAP[detail_kind]
     with conn.cursor() as cursor:
         if include_file:
             with open(include_file) as f:
@@ -105,36 +125,35 @@ def import_detail(conn, stmt, year, input_dir, include_file, exclude_file,
                 break
 
             with open(os.path.join(dirname, detail_file), 'r') as f:
-                vals = dict.fromkeys(FIELDS)
+                vals = None
                 try:
-                    for k, v in json.load(f).items():
-                        fld_name, fld_type = FIELDS_MAP[k]
-                        if not fld_type: #ignore
-                            continue
-                        if fld_type is datetime.date:
-                            v = datetime.datetime.strptime(v, '%Y.%m.%d')
-                        vals[fld_name] = v
-                    app_no = vals[APP_NO]
-                    assert app_no == detail_file
+                    json_obj = json.load(f)
+                    if isinstance(json_obj, list): # transaction case
+                        for details in json_obj:
+                            vals = parse_data(
+                                    details, flds_map, flds, batch_vals)
+                            vals[APP_NO] = detail_file
+                    else: # detail case
+                        vals = parse_data(json_obj, flds_map, flds, batch_vals)
+                        assert vals[APP_NO] == detail_file
                 #except (KeyError, AssertionError) as e:
                 except Exception as e:
-                    vals[APP_NO] = detail_file # just in case
-                    failed_vals.append(vals)
+                    vals[APP_NO] = detail_file # in case of early exception
+                    failed_vals.append(vals) # it's OK even in transaction case
                     logger.error("{}({})".format(detail_file, e))
                     continue
 
-                batch_vals.append(vals)
-                if dry_run:
-                    logger.debug("execute: {}\n{}\n".format(stmt, vals))
+                if dry_run: # only show 1 insertion in each transaction
+                    print "execute: {}\n{}".format(stmt, vals)
                 elif len(batch_vals) >= batch_size:
                     insert_data(conn, cursor, stmt, batch_vals, failed_vals)
         # leftover
         if batch_vals:
             insert_data(conn, cursor, stmt, batch_vals, failed_vals)
-        if failed_vals:
-            with open(error_file, 'w') as f:
-                for val in failed_vals:
-                    f.write("{}\n".format(val[APP_NO]))
+    if failed_vals:
+        with open(error_file, 'w') as f:
+            for val in failed_vals:
+                f.write("{}\n".format(val[APP_NO]))
 
 
 def main(argv=None):
@@ -151,9 +170,12 @@ def main(argv=None):
             help="database password")
     parser.add_option("-H", "--host", dest="host", default="localhost",
             help="database host")
+    parser.add_option("-K", "--detail-kind", dest="detail_kind", type="int",
+            default="1",
+            help="1: {} 2: {}".format(*DETAIL_KINDS))
     parser.add_option("-t", "--patent_table",
-            dest="patent_table", default="patent",
-            help="patent table name")
+            dest="patent_table_prefix", default="patent_",
+            help="patent table's prefix")
     parser.add_option("-i", "--input-dir", dest="input_dir", default="input",
             help="input directory(contains patent details)")
     parser.add_option("-I", "--include-file", dest="include_file",
@@ -174,6 +196,13 @@ def main(argv=None):
     if len(args) == 0:
         parser.error("missing arguments")
 
+    detail_kind = options.detail_kind - 1
+    try:
+        detail_kind_str = DETAIL_KINDS[detail_kind]
+    except:
+        parser.error("detail_kind should be an integer between 1 and {}".format(
+            len(DETAIL_KINDS)))
+
     input_dir = options.input_dir
     include_file = options.include_file
     exclude_file = options.exclude_file
@@ -187,10 +216,13 @@ def main(argv=None):
             "dbname='{}' user='{}' host='{}' password='{}'".format(
                 options.database, options.user,
                 options.host, options.password)) as conn:
-        stmt = create_statement(options.patent_table)
+        stmt = create_statement(options.patent_table_prefix + detail_kind_str,
+                detail_kind)
         for year in args:
-            print "processing year {}...".format(year)
-            import_detail(conn, stmt, year, input_dir=input_dir,
+            print "processing on patents' {} in year {}".format(
+                    detail_kind_str, year)
+            import_data(conn, stmt, detail_kind, year,
+                    input_dir=input_dir,
                     include_file=include_file, exclude_file=exclude_file,
                     error_file=error_file+year, start=start, end=end,
                     batch_size=batch_size, dry_run=dry_run)

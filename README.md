@@ -35,16 +35,16 @@ Please take the following steps:
     output:
         {output_dir}/{year}
 
-4. create a table on a (Postgres) database
+4. create a table on a (Postgres) database(d: detail, t: transaction)
 
-        bin/initdb.sh -d{database} -u{db_user} -t{db_table} 
+        bin/initdb.sh -d{database} -u{db_user} -t{db_table} d|t 
 
     output:
         a table in database
 
 5. import data into database
 
-        python cnsipo/patent_db.py -d{database} -u{db_user} -p{password} -t{db_table} -i {input_dir} {year}
+        python cnsipo/patent_db.py -d{database} -u{db_user} -p{password} -t{db_table} -i {input_dir} -K{detail_kind} {year}
 
     output:
         data in database
