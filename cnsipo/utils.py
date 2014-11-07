@@ -31,7 +31,7 @@ def apply_function(f, *args, **kwargs):
 
 
 def retry(forgivable_exceptions, forgive=lambda x: True,
-        tries=5, delay=5, backoff=2, logger=None):
+          tries=5, delay=5, backoff=2, logger=None):
     """Retry decorator with exponential backoff.
 
     `forgivable_exceptions` is a type of Exception(or Exception tuple)
@@ -67,7 +67,7 @@ def retry(forgivable_exceptions, forgive=lambda x: True,
                         raise forgiven
 
                     msg = "Error: {}. Retry in {} seconds...".format(
-                            str(e), mdelay)
+                        str(e), mdelay)
                     if logger:
                         logger.debug(msg)
                     else:
@@ -77,7 +77,7 @@ def retry(forgivable_exceptions, forgive=lambda x: True,
                     mdelay *= backoff
                     if callable(forgiven):
                         forgiven(args[0] if len(args) else None)
-            return f(*args, **kwargs) # last chance
+            return f(*args, **kwargs)  # last chance
 
         return wrapper
 
@@ -102,7 +102,7 @@ class JobQueue(object):
 
         # calling start will automatically enable thread
         self._thread_enabled = True
-        if self._queue: # threads already created
+        if self._queue:  # threads already created
             return
 
         queue = self._queue = Queue()

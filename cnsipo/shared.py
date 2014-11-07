@@ -33,7 +33,7 @@ def get_logger():
     log_conf_file = os.path.join(main_name + "-logging.conf")
     if not os.path.exists(log_conf_file):
         sys.stderr.write("log configuration file {} does NOT exist\n"
-                .format(log_conf_file))
+                         .format(log_conf_file))
         sys.exit(1)
 
     try:
@@ -50,11 +50,11 @@ class ContentError(Exception):
 
 
 FORGIVEN_ERROR = (requests.exceptions.HTTPError,
-        requests.exceptions.ConnectionError,
-        requests.exceptions.Timeout,
-        socket.timeout,
-        socket.error,
-        ContentError)
+                  requests.exceptions.ConnectionError,
+                  requests.exceptions.Timeout,
+                  socket.timeout,
+                  socket.error,
+                  ContentError)
 
 
 DETAIL_KINDS = ['detail', 'transaction']

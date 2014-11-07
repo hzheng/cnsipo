@@ -80,8 +80,8 @@ create_transaction_db() {
         CREATE TABLE ${tblprefix}transaction(
             trans_id    SERIAL PRIMARY KEY  NOT NULL,
             app_no      varchar(28) NOT NULL REFERENCES ${tblprefix}detail (app_no),
-            data_type    varchar(200),
-            pub_date     date
+            pub_date    date,
+            data_type   varchar(200)
     );
 EOF
 }

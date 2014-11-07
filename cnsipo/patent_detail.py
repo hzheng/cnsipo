@@ -34,12 +34,10 @@ logger = get_logger()
 
 def detail_params(patent_id, kind):
     params = {
-            'strSources': STR_SRC[kind],
-            'strWhere': "申请号='{}' and {}INDEX=1".format(
-                patent_id, STR_WHERE[kind]),
-            'strLicenseCode': "",
-            'pageNow': 1,
-            }
+        'strSources': STR_SRC[kind],
+        'strWhere': "申请号='{}' and {}INDEX=1".format(
+            patent_id, STR_WHERE[kind]), 'strLicenseCode': "", 'pageNow': 1
+        }
     return "http://epub.sipo.gov.cn/patentdetail.action", params
 
 
@@ -50,16 +48,14 @@ def detail_parse(bs, kind):
     for row in tbl.findAll('tr'):
         cells = row.findAll('td')
         details[cells[0].get_text().encode('utf-8')] = \
-                cells[1].get_text().encode('utf-8')
+            cells[1].get_text().encode('utf-8')
     digest = bs.find_all("div", class_="xm_jsh")[0]
     details['摘要'] = digest.get_text().encode('utf-8')
     return details
 
 
 def transaction_params(patent_id, kind):
-    params = {
-            'an': "{}".format(patent_id),
-            }
+    params = {'an': "{}".format(patent_id)}
     return "http://epub.sipo.gov.cn/fullTran.action", params
 
 
@@ -73,14 +69,14 @@ def transaction_parse(bs, kind):
             cells = rows[1].findAll('td')
             for i in [0, 2]:
                 key_val[cells[i].get_text().encode('utf-8')] \
-                        = cells[i+1].get_text().encode('utf-8')
+                    = cells[i+1].get_text().encode('utf-8')
             trans.append(key_val)
     return trans
 
 
 @retry(FORGIVEN_ERROR, tries=RETRIES, delay=DELAY, backoff=1, logger=logger)
 def query(get_params, parse, kind,
-        patent_id, dirname, timeout, check_level, dry_run=False):
+          patent_id, dirname, timeout, check_level, dry_run=False):
     if not os.path.isdir(dirname):
         os.makedirs(dirname)
     output_path = os.path.join(dirname, patent_id)
@@ -102,7 +98,7 @@ def query(get_params, parse, kind,
         resp = requests.post(url, params=params, timeout=timeout)
         bs = BeautifulSoup(resp.text)
         result = parse(bs, kind)
-        if not result: #empty
+        if not result:  # empty
             raise ContentError("no valid data found")
         with open(output_path, 'w') as f:
             json.dump(result, f, ensure_ascii=False)
@@ -128,30 +124,31 @@ def main():
     usage = "usage: %prog [options] yearOrId1 [yearOrId2 ...]"
     parser = OptionParser(usage)
     parser.add_option("-k", "--kind", dest="kind", type="int", default="1",
-            help="patent type(1-4)")
+                      help="patent type(1-4)")
     parser.add_option("-K", "--detail-kind", dest="detail_kind", type="int",
-            default="1",
-            help="1: {} 2: {}".format(*DETAIL_KINDS))
+                      default="1",
+                      help="1: {} 2: {}".format(*DETAIL_KINDS))
     parser.add_option("-i", "--input-dir", dest="input_dir", default="input",
-            help="input directory(contains ID files)")
+                      help="input directory(contains ID files)")
     parser.add_option("-o", "--output-dir",
-            dest="output_dir", default="output",
-            help="output directory")
+                      dest="output_dir", default="output",
+                      help="output directory")
     parser.add_option("-t", "--threads", dest="threads", type="int",
-            default="20",
-            help="number of threads")
+                      default="20",
+                      help="number of threads")
     parser.add_option("-T", "--timeout", dest="timeout", type="int",
-            default="5",
-            help="connection timeout")
+                      default="5",
+                      help="connection timeout")
     parser.add_option("-s", "--start", dest="start", type="int", default="0",
-            help="start index")
+                      help="start index")
     parser.add_option("-e", "--end", dest="end", type="int", default="-1",
-            help="end index")
+                      help="end index")
     parser.add_option("-c", "--check-level", dest="check_level", type="int",
-            default="1",
-            help="0: no check, 1: check file existence, 2: check file size")
+                      default="1",
+                      help="0: no check, 1: check file existence, "
+                      "2: check file size")
     parser.add_option("-n", "--dry-run", action="store_true", dest="dry_run",
-            help="show what would have been done")
+                      help="show what would have been done")
     (options, args) = parser.parse_args()
     if len(args) == 0:
         parser.error("missing arguments")
@@ -164,8 +161,8 @@ def main():
         get_params = globals()[detail_kind + "_params"]
         parse = globals()[detail_kind + "_parse"]
     except:
-        parser.error("detail_kind should be an integer between 1 and {}".format(
-            len(DETAIL_KINDS)))
+        parser.error("detail_kind should be an integer between 1 and {}".
+                     format(len(DETAIL_KINDS)))
 
     input_dir = options.input_dir
     output_dir = options.output_dir
@@ -177,28 +174,30 @@ def main():
 
     job_queue = JobQueue(1 if dry_run else options.threads)
     with threaded(job_queue):
-        if len(args[0]) == 4: # assumed years
+        if len(args[0]) == 4:  # assumed years
             for year in args:
                 dirname = os.path.join(output_dir, year)
                 print "start on patents' {}(kind: {}) in year {}".format(
-                        detail_kind, kind_str, year)
+                    detail_kind, kind_str, year)
                 with open(os.path.join(input_dir, year)) as f:
                     i = 1
                     for line in f:
                         i += 1
                         if i > start and (end < 0 or i <= end):
                             job_queue.add_task(query,
-                                    get_params, parse, kind,
-                                    line.strip(), dirname, timeout=timeout,
-                                    check_level=check_level, dry_run=dry_run)
-        else: # assumed ids
+                                               get_params, parse, kind,
+                                               line.strip(), dirname,
+                                               timeout=timeout,
+                                               check_level=check_level,
+                                               dry_run=dry_run)
+        else:  # assumed ids
             for patent_id in args:
                 print "start on patent {}'s {}(kind: {})".format(
-                        patent_id, detail_kind, kind_str)
+                    patent_id, detail_kind, kind_str)
                 dirname = output_dir
                 job_queue.add_task(query, get_params, parse, kind,
-                        patent_id, dirname, timeout=timeout,
-                        check_level=check_level, dry_run=dry_run)
+                                   patent_id, dirname, timeout=timeout,
+                                   check_level=check_level, dry_run=dry_run)
     return 0
 
 

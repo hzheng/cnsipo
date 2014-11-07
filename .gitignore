@@ -1,8 +1,9 @@
 TODO
 tmp
 *.pyc
-patent_list-logging.conf
-patent_detail-logging.conf
-patent_db-logging.conf
+*.sublime-workspace
+*.sublime-project
+*-logging.conf
+
 input
 output

@@ -37,16 +37,16 @@ def init_params(year, kind, input_dir):
     logger.info("init with year: {}, kind: {}".format(year, kind))
 
     params = {
-            'showType': 0,
-            'selected': kind,
-            'pageSize': PAGE_SIZE,
-            'numSortMethod': 0,
-            'strWord': "申请日=BETWEEN['{0}','{0}']".format(year),
-            'pageNow': 1,
-            }
-    if kind == 'syxx': # ugly, huh?
+        'showType': 0,
+        'selected': kind,
+        'pageSize': PAGE_SIZE,
+        'numSortMethod': 0,
+        'strWord': "申请日=BETWEEN['{0}','{0}']".format(year),
+        'pageNow': 1,
+    }
+    if kind == 'syxx':  # ugly, huh?
         params['selected'] = "xxsq"
-    params["num" + kind.upper()] = 0 # important
+    params["num" + kind.upper()] = 0  # important
     try:
         input_file = "{}/{}-{}.html".format(input_dir, kind, year)
         if os.path.exists(input_file):
@@ -62,7 +62,7 @@ def init_params(year, kind, input_dir):
         with open(input_file, 'r') as f:
             page = f.read()
             keys = dict(re.findall("ksjs\.(.*)\.value = \"(.+)\"", page))
-            params['strLicenseCode'] = keys['strLicenseCode'] #necessary?
+            params['strLicenseCode'] = keys['strLicenseCode']  # necessary?
             num_str = "num" + kind.upper()
             count = params[num_str] = keys[num_str]
             count = int(count)
@@ -130,22 +130,22 @@ def main(argv=None):
     parser = OptionParser(usage)
 
     parser.add_option("-k", "--kind", dest="kind", type="int", default="1",
-            help="patent type(1-4)")
+                      help="patent type(1-4)")
     parser.add_option("-i", "--input-dir", dest="input_dir", default="input",
-            help="input directory(save downloaded pages)")
+                      help="input directory(save downloaded pages)")
     parser.add_option("-o", "--output-dir",
-            dest="output_dir", default="output",
-            help="output directory")
+                      dest="output_dir", default="output",
+                      help="output directory")
     parser.add_option("-t", "--threads", dest="threads", default="20",
-            help="number of threads")
+                      help="number of threads")
     parser.add_option("-T", "--timeout", dest="timeout", default="5",
-            help="connection timeout")
+                      help="connection timeout")
     parser.add_option("-s", "--start", dest="start", default="1",
-            help="start page")
+                      help="start page")
     parser.add_option("-e", "--end", dest="end", default="-1",
-            help="end page")
+                      help="end page")
     parser.add_option("-n", "--dry-run", action="store_true", dest="dry_run",
-            help="show what would have been done")
+                      help="show what would have been done")
     (options, args) = parser.parse_args(argv)
     if len(args) == 0:
         parser.error("missing arguments")
@@ -171,9 +171,10 @@ def main(argv=None):
     job_queue = JobQueue(1 if dry_run else int(options.threads))
     with threaded(job_queue):
         for i in range(start, end + 1):
-            job_queue.add_task(query, params, year, i,
-                    dirname=output_dir, timeout=timeout, dry_run=dry_run)
+            job_queue.add_task(query, params, year, i, dirname=output_dir,
+                               timeout=timeout, dry_run=dry_run)
     return 0
+
 
 if __name__ == '__main__':
     sys.exit(main())
