@@ -4,6 +4,6 @@ tmp
 *.sublime-workspace
 *.sublime-project
 *-logging.conf
-
+.DS_Store
 input
 output

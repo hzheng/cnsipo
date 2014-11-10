@@ -139,6 +139,8 @@ def import_data(conn, stmt, detail_kind, year, input_dir, include_file,
                         assert vals[APP_NO] == detail_file
                 #except (KeyError, AssertionError) as e:
                 except Exception as e:
+                    if vals is None:
+                        vals = {}
                     vals[APP_NO] = detail_file  # in case of early exception
                     failed_vals.append(vals)  # OK even in transaction case
                     logger.error("{}({})".format(detail_file, e))

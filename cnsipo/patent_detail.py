@@ -37,12 +37,12 @@ def detail_params(patent_id, kind):
         'strSources': STR_SRC[kind],
         'strWhere': "申请号='{}' and {}INDEX=1".format(
             patent_id, STR_WHERE[kind]), 'strLicenseCode': "", 'pageNow': 1
-        }
+    }
     return "http://epub.sipo.gov.cn/patentdetail.action", params
 
 
 def detail_parse(bs, kind):
-    ### TODO: not work for kind 'wgsq'
+    # TODO: not work for kind 'wgsq'
     details = {}
     tbl = bs.table.table
     for row in tbl.findAll('tr'):
@@ -69,7 +69,7 @@ def transaction_parse(bs, kind):
             cells = rows[1].findAll('td')
             for i in [0, 2]:
                 key_val[cells[i].get_text().encode('utf-8')] \
-                    = cells[i+1].get_text().encode('utf-8')
+                    = cells[i + 1].get_text().encode('utf-8')
             trans.append(key_val)
     return trans
 
