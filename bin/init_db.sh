@@ -6,10 +6,10 @@ declare -r SCRIPT_NAME=$(basename "$BASH_SOURCE" .sh)
 bail() {
     echo -ne "$1" >&2
     exit ${2-1}
-} 
+}
 
 ## help message
-declare -r HELP_MSG="Usage: $SCRIPT_NAME [OPTION]... d|t
+declare -r HELP_MSG="Usage: $SCRIPT_NAME [OPTION]... d|t|a
   -h    display this help and exit
   -d    database name
   -p    database password
@@ -86,11 +86,26 @@ create_transaction_db() {
 EOF
 }
 
-case $1 in 
+create_aux_db() {
+    PGPASSWORD=$pwd psql $dbname $username << EOF
+        CREATE TABLE ${tblprefix}aux(
+            aux_id      SERIAL PRIMARY KEY  NOT NULL,
+            app_no      varchar(28) NOT NULL REFERENCES ${tblprefix}detail (app_no),
+            app_year    smallint,
+            country     varchar(20),
+            state       varchar(10),
+            attrs       smallint
+    );
+EOF
+}
+
+case $1 in
     d)
         create_detail_db;;
     t)
         create_transaction_db;;
+    a)
+        create_aux_db;;
     *)
         usage "Invalid argument: $1\n";;
 esac
