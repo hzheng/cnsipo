@@ -26,15 +26,23 @@ import requests
 LOGGER_NAME = "patent"
 
 
+def fallback_logger(stream=sys.stdout):
+    logger = logging.getLogger('_FALLBACK_')
+    logger.addHandler(logging.StreamHandler(stream))
+    return logger
+
+
 def get_logger():
     frame = inspect.stack()[1]
     caller_file = inspect.getmodule(frame[0]).__file__
     main_name = re.search("(\w+)\.py", caller_file).group(1)
     log_conf_file = os.path.join(main_name + "-logging.conf")
     if not os.path.exists(log_conf_file):
-        sys.stderr.write("log configuration file {} does NOT exist\n"
+        sys.stderr.write("WARNING: log configuration file {} does NOT exist,"
+                         " use stdout instead.\n"
                          .format(log_conf_file))
-        sys.exit(1)
+        return fallback_logger()
+        # sys.exit(1)
 
     try:
         logging.config.fileConfig(log_conf_file)
