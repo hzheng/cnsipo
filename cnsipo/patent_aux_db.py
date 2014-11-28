@@ -6,13 +6,6 @@ Fill data into an auxiliary patent database
 
 from __future__ import print_function
 
-__author__ = "Hui Zheng"
-__copyright__ = "Copyright 2014 Hui Zheng"
-__credits__ = ["Hui Zheng"]
-__license__ = "MIT <http://www.opensource.org/licenses/mit-license.php>"
-__version__ = "0.1"
-__email__ = "xyzdll[AT]gmail[DOT]com"
-
 import sys
 import re
 from optparse import OptionParser

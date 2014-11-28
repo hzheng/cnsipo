@@ -4,14 +4,6 @@
 Retrieve patent ID's
 """
 
-
-__author__ = "Hui Zheng"
-__copyright__ = "Copyright 2014 Hui Zheng"
-__credits__ = ["Hui Zheng"]
-__license__ = "MIT <http://www.opensource.org/licenses/mit-license.php>"
-__version__ = "0.1"
-__email__ = "xyzdll[AT]gmail[DOT]com"
-
 import requests
 import re
 import os
