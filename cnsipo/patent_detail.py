@@ -19,8 +19,9 @@ from optparse import OptionParser
 
 from bs4 import BeautifulSoup
 
-from utils import retry, JobQueue, threaded
-from shared import get_logger, ContentError, FORGIVEN_ERROR, DETAIL_KINDS
+from cnsipo.utils import retry, JobQueue, threaded
+from cnsipo.shared import get_logger, ContentError, FORGIVEN_ERROR, \
+    DETAIL_KINDS
 
 
 KINDS = ['fmgb', 'fmsq', 'syxx', 'wgsq']
@@ -120,7 +121,7 @@ def query(get_params, parse, kind,
         raise
 
 
-def main():
+def main(argv=None):
     usage = "usage: %prog [options] yearOrId1 [yearOrId2 ...]"
     parser = OptionParser(usage)
     parser.add_option("-k", "--kind", dest="kind", type="int", default="1",

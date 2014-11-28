@@ -19,7 +19,7 @@ from optparse import OptionParser
 
 import psycopg2
 
-from shared import get_logger, DETAIL_KINDS
+from cnsipo.shared import get_logger, DETAIL_KINDS
 
 logger = get_logger()
 
@@ -57,14 +57,14 @@ FIELDS = [(APP_NO, "name", "inventor", "applicant", "app_date", "app_pub_no",
           "app_pub_date", "int_cl", "address", "digest", "agency", "agent"),
           # "priority", "native_priority", "init_app", "pct_app_data",
           # "pct_pub_data", "pct_stage_date", "bio_protection",
-          #"comp_file", 'mod_lit_pub_date'
+          # "comp_file", 'mod_lit_pub_date'
           (APP_NO, "pub_date", "data_type")]
 
 
 def create_statement(table, detail_kind):
     flds = FIELDS[detail_kind]
-    return "INSERT INTO {} ({}) VALUES ({});".format(table,
-           ",".join(flds), ",".join(["%(" + i + ")s" for i in flds]))
+    return "INSERT INTO {} ({}) VALUES ({});".format(
+        table, ",".join(flds), ",".join(["%(" + i + ")s" for i in flds]))
 
 
 def insert_data(conn, cursor, stmt, batch_vals, failed_vals):
@@ -80,7 +80,7 @@ def insert_data(conn, cursor, stmt, batch_vals, failed_vals):
     except psycopg2.DatabaseError as e:  # unexpected
         logger.error("unexpected database error: {}".format(e))
 
-    #failed
+    # failed
     failed_vals.extend(batch_vals)
     batch_vals[:] = []
     conn.rollback()
@@ -137,7 +137,7 @@ def import_data(conn, stmt, detail_kind, year, input_dir, include_file,
                     else:  # detail case
                         vals = parse_data(json_obj, flds_map, flds, batch_vals)
                         assert vals[APP_NO] == detail_file
-                #except (KeyError, AssertionError) as e:
+                # except (KeyError, AssertionError) as e:
                 except Exception as e:
                     if vals is None:
                         vals = {}

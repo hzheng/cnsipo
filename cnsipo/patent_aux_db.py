@@ -19,7 +19,7 @@ from optparse import OptionParser
 
 import psycopg2
 
-from shared import get_logger
+from cnsipo.shared import get_logger
 
 logger = get_logger()
 

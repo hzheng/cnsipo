@@ -1,9 +1,16 @@
 TODO
 tmp
+build
+dist
+
 *.pyc
+*.egg-info
+*.egg
+
 *.sublime-workspace
 *.sublime-project
 *-logging.conf
+.coverage
 .DS_Store
 input
 output

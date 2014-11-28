@@ -18,8 +18,8 @@ import os
 import sys
 from optparse import OptionParser
 
-from utils import retry, JobQueue, threaded
-from shared import get_logger, ContentError, FORGIVEN_ERROR
+from cnsipo.utils import retry, JobQueue, threaded
+from cnsipo.shared import get_logger, ContentError, FORGIVEN_ERROR
 
 URL = 'http://epub.sipo.gov.cn/patentoutline.action'
 DELAY = 3
@@ -87,14 +87,14 @@ def init_params(year, kind, input_dir):
 
 
 @retry(FORGIVEN_ERROR, tries=RETRIES, delay=DELAY, backoff=1, logger=logger)
-def query(params, year, page_now, dirname, timeout, dry_run=False):
+def query(params, year, page_now, dirname, timeout=5, dry_run=False):
     params = dict(params)
     params['pageNow'] = page_now
     dirname = "{}/{}".format(dirname, year)
     if not os.path.isdir(dirname):
         os.makedirs(dirname)
-    output_path = os.path.join(dirname, str(page_now))
-    if os.path.exists(output_path):
+    output_file = os.path.join(dirname, str(page_now))
+    if os.path.exists(output_file):
         logger.debug("SKIP with year: {}, page_now: {}".format(year, page_now))
         return
 
@@ -107,7 +107,7 @@ def query(params, year, page_now, dirname, timeout, dry_run=False):
         if resp.status_code != requests.codes.ok:
             raise Exception("bad status code: {}".format(resp.status_code))
 
-        with open(output_path, 'w') as f:
+        with open(output_file, 'w') as f:
             for patent_id in set(
                     re.findall("javascript:zl_xm\('([^']*)'", resp.text)):
                 f.write("{}\n".format(patent_id))
