@@ -20,10 +20,31 @@ APP_NO = 'app_no'
 APP_YEAR = 'app_year'
 COUNTRY = 'country'
 STATE = 'state'
+ADDRESS = 'address'
+APPLICANT = 'applicant'
+ATTRS = 'attrs'
 patent_parser = None
 
 
-def sort_states(records, year):
+def gen_patents(conn, table, fld, year, batch_size):
+    stmt = "SELECT {}, {} FROM {} WHERE "\
+           "extract(year from app_date) = {};".format(APP_NO, fld, table, year)
+    sort_fld = globals()["sort_" + fld]
+    with conn.cursor() as cursor:
+        try:
+            logger.debug("executing {}".format(stmt))
+            cursor.execute(stmt)
+            while True:
+                results = cursor.fetchmany(batch_size)
+                if results:
+                    yield sort_fld(results, year)
+                else:
+                    break
+        except psycopg2.DatabaseError as e:
+            logger.error("unexpected database error: {}".format(e))
+
+
+def sort_address(records, year):
     for record in records:
         result = {APP_YEAR: year}
         result[APP_NO], address = record
@@ -31,43 +52,50 @@ def sort_states(records, year):
         yield result
 
 
-def select_patent_statement(table, year):
-    return "SELECT app_no, address FROM {} WHERE "\
-        "extract(year from app_date) = {};".format(table, year)
-
-
-def save_state_statement(table):
+def save_sorted_address(conn, table, aux_tbl, year, batch_size, dry_run=False):
     flds = [APP_NO, APP_YEAR, COUNTRY, STATE]
-    return "INSERT INTO {} ({}) VALUES ({});".format(
-        table, ",".join(flds), ",".join(["%(" + i + ")s" for i in flds]))
-
-
-def gen_patents(conn, table, year, batch_size):
+    stmt = "INSERT INTO {} ({}) VALUES ({});".format(
+        aux_tbl, ",".join(flds), ",".join(["%(" + i + ")s" for i in flds]))
     with conn.cursor() as cursor:
-        stmt = select_patent_statement(table, year)
-        try:
-            logger.debug("executing {}".format(stmt))
-            cursor.execute(stmt)
-            while True:
-                results = cursor.fetchmany(batch_size)
-                if results:
-                    yield sort_states(results, year)
-                else:
-                    break
-        except psycopg2.DatabaseError as e:
-            logger.error("unexpected database error: {}".format(e))
-
-
-def save_sorted_state(conn, table, aux_tbl, year, batch_size, dry_run=False):
-    with conn.cursor() as cursor:
-        stmt = save_state_statement(aux_tbl)
         if dry_run:
             print("executing {}".format(stmt))
             return
 
         logger.debug("executing {}".format(stmt))
         try:
-            for results in gen_patents(conn, table, year, batch_size):
+            for results in gen_patents(conn, table, ADDRESS, year, batch_size):
+                cursor.executemany(stmt, results)
+            conn.commit()
+        except psycopg2.DatabaseError as e:
+            logger.error("unexpected database error: {}".format(e))
+            return
+
+
+def sort_applicant(records, year):
+    for record in records:
+        result = {}
+        result[APP_NO], applicants = record
+        parsed = patent_parser.parse_applicants(applicants)
+        attrs = 0
+        for i, val in enumerate(parsed):
+            attrs += ((1 << i) if val else 0)
+        result[ATTRS] = attrs
+        yield result
+
+
+def save_sorted_applicant(conn, table, aux_tbl, year, batch_size,
+                          dry_run=False):
+    stmt = "UPDATE {} SET {}={} WHERE {}={};".format(
+        aux_tbl, ATTRS, "%(" + ATTRS + ")s", APP_NO, "%(" + APP_NO + ")s")
+    with conn.cursor() as cursor:
+        if dry_run:
+            print("executing {}".format(stmt))
+            return
+
+        logger.debug("executing {}".format(stmt))
+        try:
+            for results in gen_patents(conn, table, APPLICANT, year,
+                                       batch_size):
                 cursor.executemany(stmt, results)
             conn.commit()
         except psycopg2.DatabaseError as e:
@@ -76,7 +104,7 @@ def save_sorted_state(conn, table, aux_tbl, year, batch_size, dry_run=False):
 
 
 def main(argv=None):
-    usage = "usage: %prog [options] year1 [year2 ...]"
+    usage = "usage: %prog [options] address|applicant year1 [year2 ...]"
     parser = OptionParser(usage)
     import getpass
     username = getpass.getuser()
@@ -107,9 +135,14 @@ def main(argv=None):
     global patent_parser
     patent_parser = PatentParser(options.loc_file)
 
-    if len(args) == 0:
+    if len(args) < 2:
         parser.error("missing arguments")
 
+    fld = args.pop(0)
+    if fld not in [ADDRESS, APPLICANT]:
+        parser.error("unknown field name: {}".format(fld))
+
+    save_sorted_fld = globals()["save_sorted_" + fld]
     detail_tbl = options.patent_detail_tbl
     aux_tbl = options.patent_aux_tbl
     batch_size = int(options.batch_size)
@@ -122,8 +155,8 @@ def main(argv=None):
         for year in args:
             print("processing on patents in year {}".format(year),
                   file=sys.stderr)
-            save_sorted_state(conn, detail_tbl, aux_tbl, year,
-                              batch_size=batch_size, dry_run=dry_run)
+            save_sorted_fld(conn, detail_tbl, aux_tbl, year,
+                            batch_size=batch_size, dry_run=dry_run)
     return 0
 
 

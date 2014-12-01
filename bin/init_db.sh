@@ -15,6 +15,10 @@ declare -r HELP_MSG="Usage: $SCRIPT_NAME [OPTION]... d|t|a
   -p    database password
   -t    table prefix
   -u    database user name
+
+  d     detail table
+  t     transaction table
+  a     auxiliary table
 "
 
 ## print the usage and exit the shell(default status code: 2)
