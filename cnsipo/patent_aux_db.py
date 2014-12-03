@@ -56,11 +56,11 @@ def save_sorted_address(conn, table, aux_tbl, year, batch_size, dry_run=False):
     flds = [APP_NO, APP_YEAR, COUNTRY, STATE]
     stmt = "INSERT INTO {} ({}) VALUES ({});".format(
         aux_tbl, ",".join(flds), ",".join(["%(" + i + ")s" for i in flds]))
-    with conn.cursor() as cursor:
-        if dry_run:
-            print("executing {}".format(stmt))
-            return
+    if dry_run:
+        print("executing {}".format(stmt))
+        return
 
+    with conn.cursor() as cursor:
         logger.debug("executing {}".format(stmt))
         try:
             for results in gen_patents(conn, table, ADDRESS, year, batch_size):
@@ -87,11 +87,11 @@ def save_sorted_applicant(conn, table, aux_tbl, year, batch_size,
                           dry_run=False):
     stmt = "UPDATE {} SET {}={} WHERE {}={};".format(
         aux_tbl, ATTRS, "%(" + ATTRS + ")s", APP_NO, "%(" + APP_NO + ")s")
-    with conn.cursor() as cursor:
-        if dry_run:
-            print("executing {}".format(stmt))
-            return
+    if dry_run:
+        print("executing {}".format(stmt))
+        return
 
+    with conn.cursor() as cursor:
         logger.debug("executing {}".format(stmt))
         try:
             for results in gen_patents(conn, table, APPLICANT, year,

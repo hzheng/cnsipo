@@ -42,27 +42,32 @@ def test_state(parser):
 
 
 def test_applicant(parser):
+    U = parser.UNIVERSITY
+    I = parser.INDUSTRY
+    G = parser.GOVERNMENT
+
     applicant_types = [
-        ("中国科学院过程工程研究所",
-         (True, False, False)),
-        ("N·V·菲利浦斯光灯制造厂",
-         (False, True, False)),
+        ("中国科学院过程工程研究所", [(U, None)]),
+        ("N·V·菲利浦斯光灯制造厂", [(I, None)]),
+        # FIXME
         ("华中科技大学; 云南电力试验研究院有限公司电力研究院",
-         (True, True, False)),
+         [(U, None), (I, '云南')]),
+        # # FIXME
         ("广东电网公司电力调度控制中心; 华南理工大学",
-         (True, True, False)),
+         [(I, '广东'), (U, None)]),
         ("中山大学附属肿瘤医院; 广州医学院; 北京索奥生物医药科技有限公司",
-         (True, True, True)),
-        ("海普拉精密工业(株)",
-         (False, True, False)),
+         [(G, '广东'), (U, '广东'), (I, '北京')]),
+        # FIXME
+        ("上海联创三信电子研发销售中心", [(G, None)]),
+        ("华夏光股份有限公司; 财团法人成大研究发展基金会",
+         [(I, None), (None, None)]),
+        ("海普拉精密工业(株)", [(I, None)]),
         ("张华; 王公司",
-         (False, False, False)),
-        ("信息产业部通信计量中心",
-         (False, False, True)),
+         [(None, None), (None, None)]),
+        ("信息产业部通信计量中心", [(G, None)]),
         ("李小明; 马里兰大学",
-         (True, False, False)),
-        ("食品产业加工烹饪技术研究组合",
-         (False, False, True))
+         [(None, None), (U, None)]),
+        ("食品产业加工烹饪技术研究组合", [(G, None)]),
     ]
     for applicant, types in applicant_types:
         assert parser.parse_applicants(applicant) == types

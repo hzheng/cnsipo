@@ -4,12 +4,12 @@
 Retrieve patent details and transactions
 """
 
-import requests
 import json
 import os
 import sys
 from optparse import OptionParser
 
+import requests
 from bs4 import BeautifulSoup
 
 from cnsipo.utils import retry, JobQueue, threaded

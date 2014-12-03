@@ -4,11 +4,12 @@
 Retrieve patent ID's
 """
 
-import requests
 import re
 import os
 import sys
 from optparse import OptionParser
+
+import requests
 
 from cnsipo.utils import retry, JobQueue, threaded
 from cnsipo.shared import get_logger, ContentError, FORGIVEN_ERROR
