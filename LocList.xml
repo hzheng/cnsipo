@@ -1,6 +1,6 @@
 ﻿<Location>
   <CountryRegion Name="中国" Code="1">
-    <State Name="北京" Code="11">
+    <State Name="北京" Code="11" ZipPrefix="10">
       <City Name="东城" Code="1" />
       <City Name="西城" Code="2" />
       <City Name="朝阳" Code="5" />
@@ -18,7 +18,7 @@
       <City Name="密云" Code="28" />
       <City Name="延庆" Code="29" />
     </State>
-    <State Name="天津" Code="12">
+    <State Name="天津" Code="12" ZipPrefix="30">
       <City Name="和平" Code="1" />
       <City Name="河东" Code="2" />
       <City Name="河西" Code="3" />
@@ -36,7 +36,7 @@
       <City Name="宝坻" Code="24" />
       <City Name="蓟县" Code="25" />
     </State>
-    <State Name="河北" Code="13">
+    <State Name="河北" Code="13" ZipPrefix="05,06,07">
       <City Name="石家庄" Code="1">
         <Region Name="长安区" Code="2" />
         <Region Name="桥东区" Code="3" />
@@ -232,7 +232,7 @@
         <Region Name="深州市" Code="82" />
       </City>
     </State>
-    <State Name="山西" Code="14">
+    <State Name="山西" Code="14" ZipPrefix="03,04">
       <City Name="太原" Code="1">
         <Region Name="小店区" Code="5" />
         <Region Name="迎泽区" Code="6" />
@@ -375,7 +375,7 @@
         <Region Name="汾阳市" Code="82" />
       </City>
     </State>
-    <State Name="内蒙古" Code="15">
+    <State Name="内蒙古" Code="15" ZipPrefix="01,02">
       <City Name="呼和浩特" Code="1">
         <Region Name="新城区" Code="2" />
         <Region Name="回民区" Code="3" />
@@ -502,7 +502,7 @@
         <Region Name="额济纳旗" Code="23" />
       </City>
     </State>
-    <State Name="辽宁" Code="21">
+    <State Name="辽宁" Code="21" ZipPrefix="11,12">
       <City Name="沈阳" Code="1">
         <Region Name="和平区" Code="2" />
         <Region Name="沈河区" Code="3" />
@@ -632,7 +632,7 @@
         <Region Name="兴城市" Code="81" />
       </City>
     </State>
-    <State Name="吉林" Code="22">
+    <State Name="吉林" Code="22" ZipPrefix="13">
       <City Name="长春" Code="1">
         <Region Name="南关区" Code="2" />
         <Region Name="宽城区" Code="3" />
@@ -712,7 +712,7 @@
         <Region Name="安图县" Code="26" />
       </City>
     </State>
-    <State Name="黑龙江" Code="23">
+    <State Name="黑龙江" Code="23" ZipPrefix="15,16">
       <City Name="哈尔滨" Code="1">
         <Region Name="道里区" Code="2" />
         <Region Name="南岗区" Code="3" />
@@ -868,7 +868,7 @@
         <Region Name="漠河县" Code="23" />
       </City>
     </State>
-    <State Name="上海" Code="31">
+    <State Name="上海" Code="31" ZipPrefix="20">
       <City Name="黄浦" Code="1" />
       <City Name="卢湾" Code="3" />
       <City Name="徐汇" Code="4" />
@@ -888,7 +888,7 @@
       <City Name="青浦" Code="29" />
       <City Name="崇明" Code="30" />
     </State>
-    <State Name="江苏" Code="32">
+    <State Name="江苏" Code="32" ZipPrefix="21,22">
       <City Name="南京" Code="1">
         <Region Name="玄武区" Code="2" />
         <Region Name="白下区" Code="3" />
@@ -1020,7 +1020,7 @@
         <Region Name="泗洪县" Code="24" />
       </City>
     </State>
-    <State Name="浙江" Code="33">
+    <State Name="浙江" Code="33" ZipPrefix="31,32">
       <City Name="杭州" Code="1">
         <Region Name="上城区" Code="2" />
         <Region Name="下城区" Code="3" />
@@ -1134,7 +1134,7 @@
         <Region Name="龙泉市" Code="81" />
       </City>
     </State>
-    <State Name="安徽" Code="34">
+    <State Name="安徽" Code="34" ZipPrefix="23,24">
       <City Name="合肥" Code="1">
         <Region Name="瑶海区" Code="2" />
         <Region Name="庐阳区" Code="3" />
@@ -1273,7 +1273,7 @@
         <Region Name="宁国市" Code="81" />
       </City>
     </State>
-    <State Name="福建" Code="35">
+    <State Name="福建" Code="35" ZipPrefix="35,36">
       <City Name="福州" Code="1">
         <Region Name="鼓楼区" Code="2" />
         <Region Name="台江区" Code="3" />
@@ -1378,7 +1378,7 @@
         <Region Name="福鼎市" Code="82" />
       </City>
     </State>
-    <State Name="江西" Code="36">
+    <State Name="江西" Code="36" ZipPrefix="33,34">
       <City Name="南昌" Code="1">
         <Region Name="东湖区" Code="2" />
         <Region Name="西湖区" Code="3" />
@@ -1501,7 +1501,7 @@
         <Region Name="德兴市" Code="81" />
       </City>
     </State>
-    <State Name="山东" Code="37">
+    <State Name="山东" Code="37" ZipPrefix="25,26,27">
       <City Name="济南" Code="1">
         <Region Name="历下区" Code="2" />
         <Region Name="市中区" Code="3" />
@@ -1677,7 +1677,7 @@
         <Region Name="东明县" Code="28" />
       </City>
     </State>
-    <State Name="河南" Code="41">
+    <State Name="河南" Code="41" ZipPrefix="45,46,47">
       <City Name="郑州" Code="1">
         <Region Name="中原区" Code="2" />
         <Region Name="二七区" Code="3" />
@@ -1872,7 +1872,7 @@
       </City>
       <City Name="济源" Code="18" />
     </State>
-    <State Name="湖北" Code="42">
+    <State Name="湖北" Code="42" ZipPrefix="43,44">
       <City Name="武汉" Code="1">
         <Region Name="江岸区" Code="2" />
         <Region Name="江汉区" Code="3" />
@@ -2003,7 +2003,7 @@
       <City Name="天门" Code="96" />
       <City Name="神农架" Code="A21" />
     </State>
-    <State Name="湖南" Code="43">
+    <State Name="湖南" Code="43" ZipPrefix="41,42">
       <City Name="长沙" Code="1">
         <Region Name="芙蓉区" Code="2" />
         <Region Name="天心区" Code="3" />
@@ -2155,7 +2155,7 @@
         <Region Name="龙山县" Code="30" />
       </City>
     </State>
-    <State Name="广东" Code="44">
+    <State Name="广东" Code="44" ZipPrefix="51,52">
       <City Name="广州" Code="1">
         <Region Name="荔湾区" Code="3" />
         <Region Name="越秀区" Code="4" />
@@ -2322,7 +2322,7 @@
         <Region Name="罗定市" Code="81" />
       </City>
     </State>
-    <State Name="广西" Code="45">
+    <State Name="广西" Code="45" ZipPrefix="53,54">
       <City Name="南宁" Code="1">
         <Region Name="兴宁区" Code="2" />
         <Region Name="青秀区" Code="3" />
@@ -2461,7 +2461,7 @@
         <Region Name="凭祥市" Code="81" />
       </City>
     </State>
-    <State Name="海南" Code="46">
+    <State Name="海南" Code="46" ZipPrefix="57">
       <City Name="海口" Code="1">
         <Region Name="秀英区" Code="5" />
         <Region Name="龙华区" Code="6" />
@@ -2486,9 +2486,9 @@
       <City Name="陵水" Code="A34" />
       <City Name="保亭" Code="A35" />
       <City Name="琼中" Code="A36" />
-      
+
     </State>
-    <State Name="重庆" Code="50">
+    <State Name="重庆" Code="50" ZipPrefix="40">
       <City Name="万州" Code="1" />
       <City Name="涪陵" Code="2" />
       <City Name="渝中" Code="3" />
@@ -2531,7 +2531,7 @@
       <City Name="永川" Code="83" />
       <City Name="南川" Code="84" />
     </State>
-    <State Name="四川" Code="51">
+    <State Name="四川" Code="51" ZipPrefix="61,62,63,64">
       <City Name="成都" Code="1">
         <Region Name="锦江区" Code="4" />
         <Region Name="青羊区" Code="5" />
@@ -2756,7 +2756,7 @@
         <Region Name="雷波县" Code="37" />
       </City>
     </State>
-    <State Name="贵州" Code="52">
+    <State Name="贵州" Code="52" ZipPrefix="55,56">
       <City Name="贵阳" Code="1">
         <Region Name="南明区" Code="2" />
         <Region Name="云岩区" Code="3" />
@@ -2864,7 +2864,7 @@
         <Region Name="三都水族自治县" Code="32" />
       </City>
     </State>
-    <State Name="云南" Code="53">
+    <State Name="云南" Code="53" ZipPrefix="65,66,67">
       <City Name="昆明" Code="1">
         <Region Name="五华区" Code="2" />
         <Region Name="盘龙区" Code="3" />
@@ -3027,7 +3027,7 @@
         <Region Name="维西傈僳族自治县" Code="23" />
       </City>
     </State>
-    <State Name="西藏" Code="54">
+    <State Name="西藏" Code="54" ZipPrefix="85">
       <City Name="拉萨" Code="1">
         <Region Name="城关区" Code="2" />
         <Region Name="林周县" Code="21" />
@@ -3116,7 +3116,7 @@
         <Region Name="朗　县" Code="27" />
       </City>
     </State>
-    <State Name="陕西" Code="61">
+    <State Name="陕西" Code="61" ZipPrefix="71,72">
       <City Name="西安" Code="1">
         <Region Name="新城区" Code="2" />
         <Region Name="碑林区" Code="3" />
@@ -3245,7 +3245,7 @@
         <Region Name="柞水县" Code="26" />
       </City>
     </State>
-    <State Name="甘肃" Code="62">
+    <State Name="甘肃" Code="62" ZipPrefix="73,74">
       <City Name="兰州" Code="1">
         <Region Name="城关区" Code="2" />
         <Region Name="七里河区" Code="3" />
@@ -3362,7 +3362,7 @@
         <Region Name="夏河县" Code="27" />
       </City>
     </State>
-    <State Name="青海" Code="63">
+    <State Name="青海" Code="63" ZipPrefix="81">
       <City Name="西宁" Code="1">
         <Region Name="城东区" Code="2" />
         <Region Name="城中区" Code="3" />
@@ -3423,7 +3423,7 @@
         <Region Name="天峻县" Code="23" />
       </City>
     </State>
-    <State Name="宁夏" Code="64">
+    <State Name="宁夏" Code="64" ZipPrefix="75">
       <City Name="银川" Code="1">
         <Region Name="兴庆区" Code="4" />
         <Region Name="西夏区" Code="5" />
@@ -3457,7 +3457,7 @@
         <Region Name="海原县" Code="22" />
       </City>
     </State>
-    <State Name="新疆" Code="65">
+    <State Name="新疆" Code="65" ZipPrefix="83,84">
       <City Name="乌鲁木齐" Code="1">
         <Region Name="天山区" Code="2" />
         <Region Name="沙依巴克区" Code="3" />
@@ -3755,6 +3755,7 @@
       <City Name="乌斯怀亚" Code="USH" />
     </State>
   </CountryRegion>
+  <CountryRegion Name="阿联酋" Code="ARE"/>
   <CountryRegion Name="阿拉伯联合酋长国" Code="ARE">
     <State>
       <City Name="阿布扎比" Code="AZ" />
@@ -3971,6 +3972,7 @@
   </CountryRegion>
   <CountryRegion Name="奥兰群岛" Code="ALA" />
 
+  <CountryRegion Name="英属巴巴多斯" Code="BRB" />
   <CountryRegion Name="巴巴多斯" Code="BRB" />
   <CountryRegion Name="巴巴多斯岛" Code="BRB" />
   <CountryRegion Name="巴布亚新几内亚" Code="PNG">
@@ -4095,6 +4097,8 @@
   </CountryRegion>
 
   <CountryRegion Name="英属百慕大" Code="BMU" />
+  <CountryRegion Name="英属百慕达" Code="BMU" />
+  <CountryRegion Name="百慕达" Code="BMU" />
   <CountryRegion Name="百慕大" Code="BMU" />
   <CountryRegion Name="保加利亚" Code="BGR">
     <State>
@@ -4365,9 +4369,11 @@
     </State>
   </CountryRegion>
   <CountryRegion Name="西德" Code="DEU" />
+  <CountryRegion Name="联邦德" Code="DEU" />
   <CountryRegion Name="联邦德国" Code="DEU" />
   <CountryRegion Name="东德" Code="DEU" />
   <CountryRegion Name="民主德国" Code="DEU" />
+  <CountryRegion Name="徳国" Code="DEU"/>
   <CountryRegion Name="德国" Code="DEU">
     <State>
       <City Name="阿恩斯贝格" Code="ARN" />
@@ -4798,6 +4804,8 @@
   <CountryRegion Name="南韩" Code="KOR" />
   <CountryRegion Name="南朝鲜" Code="KOR" />
   <CountryRegion Name="大韩民国" Code="KOR" />
+  <CountryRegion Name="韓國" Code="KOR"/>
+  <CountryRegion Name="韓国" Code="KOR"/>
   <CountryRegion Name="韩国" Code="KOR">
     <State Name="大邱" Code="27">
       <City Name="达城郡" Code="DSG" />
@@ -5244,8 +5252,13 @@
       <City Name="朱迈利耶" Code="JM" />
     </State>
   </CountryRegion>
-  <CountryRegion Name="英属开曼群岛" Code="CYM" />
-  <CountryRegion Name="开曼群岛" Code="CYM" />
+  <CountryRegion Name="英属开曼" Code="CYM" />
+  <CountryRegion Name="大开曼" Code="CYM" />
+  <CountryRegion Name="开曼" Code="CYM" />
+  <CountryRegion Name="英属西印度开曼群岛" Code="CYM" />
+  <CountryRegion Name="英属西印度群岛" Code="CYM" />
+  <CountryRegion Name="英属西印度群岛开曼群岛" Code="CYM" />
+
   <CountryRegion Name="科科斯群岛" Code="CCK" />
   <CountryRegion Name="科摩罗" Code="COM" />
   <CountryRegion Name="科特迪瓦" Code="CIV">
@@ -5889,6 +5902,7 @@
       <City Name="夏延" Code="CYS" />
       <City Name="谢里登" Code="SHR" />
     </State>
+    <State Name="加州" Code="CA"/>
     <State Name="加利福尼亚" Code="CA">
       <City Name="旧金山" Code="SFO" />
       <City Name="洛杉矶" Code="LAX" />
@@ -7159,9 +7173,11 @@
 
   <CountryRegion Name="维尔京群岛" Code="VGB" />
   <CountryRegion Name="维京群岛" Code="VGB" />
+  <CountryRegion Name="英属维津群岛" Code="VGB" />
   <CountryRegion Name="英属维京群岛" Code="VGB" />
   <CountryRegion Name="英属维尔京群岛" Code="VGB" />
   <CountryRegion Name="英属处女群岛" Code="VGB" />
+  <CountryRegion Name="英属处女岛" Code="VGB" />
 
   <CountryRegion Name="委内瑞拉" Code="VEN">
     <State>
@@ -7420,6 +7436,8 @@
       <City Name="因弗卡吉尔" Code="IVC" />
     </State>
   </CountryRegion>
+
+  <CountryRegion Name="匈亚利" Code="HUN"/>
   <CountryRegion Name="匈牙利" Code="HUN">
     <State>
       <City Name="巴兰尼亚" Code="BA" />
@@ -7640,6 +7658,7 @@
       <City Name="斋普尔" Code="JAI" />
     </State>
   </CountryRegion>
+  <CountryRegion Name="印尼" Code="IDN"/>
   <CountryRegion Name="印度尼西亚" Code="IDN">
     <State>
       <City Name="巴厘" Code="BA" />
@@ -7783,6 +7802,9 @@
       <City Name="中央" Code="CE" />
     </State>
   </CountryRegion>
+  <CountryRegion Name="泽西海峡群岛" Code="JEY" />
+  <CountryRegion Name="英属海峡群岛" Code="JEY" />
+  <CountryRegion Name="英属泽西岛" Code="JEY" />
   <CountryRegion Name="泽西岛" Code="JEY" />
   <CountryRegion Name="乍得" Code="TCD" />
 

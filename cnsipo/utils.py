@@ -4,6 +4,7 @@
 Universal utitlities
 """
 
+import sys
 import time
 from functools import wraps
 from contextlib import contextmanager
@@ -133,3 +134,24 @@ def threaded(queue):
         yield
     finally:
         queue.finish()
+
+
+@contextmanager
+def uniform_open(filename=None, mode="w"):
+    if mode == 'w':
+        default_fp = sys.stdout
+    elif mode == 'r':
+        default_fp = sys.stdin
+    else:
+        raise ValueError("wrong file mode: {}".format(mode))
+
+    if filename:
+        fp = open(filename, mode)
+    else:
+        fp = default_fp
+
+    try:
+        yield fp
+    finally:
+        if fp is not default_fp:
+            fp.close()
