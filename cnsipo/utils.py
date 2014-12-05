@@ -155,3 +155,13 @@ def uniform_open(filename=None, mode="w"):
     finally:
         if fp is not default_fp:
             fp.close()
+
+
+def trans_str(string, from_chars, to_chars, encoding='utf8'):
+    """Translate a string from one charset to the other
+    """
+    from_unicode = from_chars.decode(encoding)
+    to_unicode = to_chars.decode(encoding)
+    trans_tbl = dict(zip(map(ord, from_unicode), map(ord, to_unicode)))
+    str_unicode = string.decode(encoding)
+    return str_unicode.translate(trans_tbl).encode(encoding)
