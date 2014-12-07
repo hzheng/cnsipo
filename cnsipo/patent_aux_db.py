@@ -22,7 +22,7 @@ COUNTRY = 'country'
 STATE = 'state'
 ADDRESS = 'address'
 APPLICANT = 'applicant'
-ATTRS = 'attrs'
+COLLAB = 'collab'
 patent_parser = None
 
 
@@ -50,12 +50,12 @@ def sort_address_applicant(records, year):
         result[APP_NO], address, applicants = record
         kind_states, result[COUNTRY], result[STATE] = \
             patent_parser.parse_applicants(applicants, address)
-        result[ATTRS] = ";".join([(k+s) for (k, s) in kind_states])
+        result[COLLAB] = ";".join([(k+s) for (k, s) in kind_states])
         yield result
 
 
 def save_sorted_info(conn, table, aux_tbl, year, batch_size, dry_run=False):
-    flds = [APP_NO, APP_YEAR, COUNTRY, STATE, ATTRS]
+    flds = [APP_NO, APP_YEAR, COUNTRY, STATE, COLLAB]
     stmt = "INSERT INTO {} ({}) VALUES ({});".format(
         aux_tbl, ",".join(flds), ",".join(["%(" + i + ")s" for i in flds]))
     if dry_run:

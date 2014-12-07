@@ -98,7 +98,7 @@ create_aux_db() {
             app_year    smallint,
             country     varchar(20),
             state       varchar(10),
-            attrs       varchar(40)
+            collab      varchar(40)
     );
 EOF
 }
