@@ -94,11 +94,11 @@ create_aux_db() {
     PGPASSWORD=$pwd psql $dbname $username << EOF
         CREATE TABLE ${tblprefix}aux(
             aux_id      SERIAL PRIMARY KEY  NOT NULL,
-            app_no      varchar(28) NOT NULL REFERENCES ${tblprefix}detail (app_no),
+            app_no      varchar(28) UNIQUE NOT NULL REFERENCES ${tblprefix}detail (app_no),
             app_year    smallint,
             country     varchar(20),
             state       varchar(10),
-            attrs       smallint
+            attrs       varchar(40)
     );
 EOF
 }

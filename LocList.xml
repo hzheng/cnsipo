@@ -5228,15 +5228,15 @@
   <CountryRegion Name="喀麦隆" Code="CMR">
     <State>
       <City Name="阿达马瓦" Code="ADA" />
-      <City Name="北部" Code="NOR" />
-      <City Name="北端" Code="EXN" />
-      <City Name="滨海" Code="LIT" />
-      <City Name="东部" Code="EST" />
-      <City Name="南部" Code="SUD" />
-      <City Name="西北" Code="NOT" />
-      <City Name="西部" Code="OUE" />
-      <City Name="西南" Code="SOU" />
-      <City Name="中央" Code="CEN" />
+      <City Name="北部市" Code="NOR" />
+      <City Name="北端市" Code="EXN" />
+      <City Name="滨海市" Code="LIT" />
+      <City Name="东部市" Code="EST" />
+      <City Name="南部市" Code="SUD" />
+      <City Name="西北市" Code="NOT" />
+      <City Name="西部市" Code="OUE" />
+      <City Name="西南市" Code="SOU" />
+      <City Name="中央市" Code="CEN" />
     </State>
   </CountryRegion>
   <CountryRegion Name="卡塔尔" Code="QAT">
@@ -6673,7 +6673,7 @@
       <City Name="韦莱-恩萨斯" Code="WN" />
       <City Name="乌苏卢坦" Code="US" />
       <City Name="伊洛潘戈" Code="IL" />
-      <City Name="中南" Code="CS" />
+      <City Name="中南市" Code="CS" />
     </State>
   </CountryRegion>
   <CountryRegion Name="萨摩亚" Code="WSM" />
@@ -7791,15 +7791,15 @@
   </CountryRegion>
   <CountryRegion Name="赞比亚" Code="ZMB">
     <State>
-      <City Name="北方" Code="NO" />
-      <City Name="东方" Code="EA" />
+      <City Name="北方市" Code="NO" />
+      <City Name="东方市" Code="EA" />
       <City Name="卢阿普拉" Code="LP" />
       <City Name="卢萨卡" Code="LK" />
-      <City Name="南方" Code="SO" />
-      <City Name="铜带" Code="CB" />
-      <City Name="西北" Code="NW" />
-      <City Name="西方" Code="WE" />
-      <City Name="中央" Code="CE" />
+      <City Name="南方市" Code="SO" />
+      <City Name="铜带市" Code="CB" />
+      <City Name="西北市" Code="NW" />
+      <City Name="西方市" Code="WE" />
+      <City Name="中央市" Code="CE" />
     </State>
   </CountryRegion>
   <CountryRegion Name="泽西海峡群岛" Code="JEY" />
