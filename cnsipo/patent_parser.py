@@ -30,7 +30,7 @@ class PatentParser(object):
     PAREN_PATTERN = re.compile("\((.+)\)")
     CN_ADDR_PATTERN = re.compile("中(国|南)|华(东|南|西|北|中)")
 
-    def __init__(self, local_list_xml, cn_univs_json):
+    def __init__(self, local_list_xml, cn_univs_json, hi_tech_ipcs):
 
         tree = ET.parse(local_list_xml)
         root = tree.getroot()
@@ -109,6 +109,10 @@ class PatentParser(object):
             self.cn_univs = {
                 s.encode('utf8'): [u.encode('utf8') for u in univs]
                 for s, univs in univs.iteritems()}
+
+        with open(hi_tech_ipcs) as f:
+            self.ipc_re = re.compile(
+                "|".join([c.strip() for c in f.readlines()]))
 
     def parse_univ(self, address):
         for state, univs in self.cn_univs.iteritems():
@@ -254,3 +258,18 @@ class PatentParser(object):
                     results = sorted(results)
 
         return results, main_country, main_state
+
+    def parse_int_cl(self, int_cl):
+        """Parse int_cl(s) and return their types.
+        """
+        hi_tech = False
+        low_tech = False
+        for ipc in re.split(";|；| | ", int_cl):
+            if not ipc:
+                continue
+
+            if self.ipc_re.match(ipc):
+                hi_tech = True
+            else:
+                low_tech = True
+        return hi_tech, low_tech

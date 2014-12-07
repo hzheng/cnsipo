@@ -7,7 +7,7 @@ Test patent parser.
 from cnsipo.patent_parser import PatentParser
 
 
-parser = PatentParser("LocList.xml", "cn_univs.json")
+parser = PatentParser("LocList.xml", "cn_univs.json", "hi_tech_ipcs")
 U = parser.UNIVERSITY
 I = parser.INDUSTRY
 G = parser.GOVERNMENT
@@ -82,3 +82,15 @@ def test_applicant():
     ]
     for applicant, address, types in applicant_types:
         assert parser.parse_applicants(applicant, address)[0] == types
+
+
+def test_ipc():
+    int_cls = [
+        ("", (False, False)),
+        ("C12R1/19(2006.01)N", (False, True)),
+        ("C40B40/06(2006.01)I", (True, False)),
+        ("C12R1/19(2006.01)N; C40B40/06(2006.01)I",
+         (True, True)),
+    ]
+    for int_cl, result in int_cls:
+        assert parser.parse_int_cl(int_cl) == result

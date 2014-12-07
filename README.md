@@ -76,7 +76,11 @@ REFERENCE
 
 1. [中国专利公布公告](http://epub.sipo.gov.cn/gjcx.jsp)
 
-2. C:\Program Files\Tencent\QQ\I18N\2052\LocList.xml
+2. [INTERNATIONAL PATENT CLASSIFICATION](http://www.wipo.int/export/sites/www/classifications/ipc/en/guide/guide_ipc.pdf)
+
+3. [High-tech patents](http://epp.eurostat.ec.europa.eu/cache/ITY_SDDS/Annexes/htec_esms_an6.pdf)
+
+4. C:\Program Files\Tencent\QQ\I18N\2052\LocList.xml
 
 
 LICENSE

@@ -22,11 +22,13 @@ COUNTRY = 'country'
 STATE = 'state'
 ADDRESS = 'address'
 APPLICANT = 'applicant'
+INT_CL = 'int_cl'
 COLLAB = 'collab'
+ATTRS = 'attrs'
 patent_parser = None
 
 
-def gen_patents(conn, table, year, batch_size):
+def gen_collab_data(conn, table, year, batch_size):
     stmt = "SELECT {}, {}, {} FROM {} WHERE "\
            "extract(year from app_date) = {};".format(
                APP_NO, ADDRESS, APPLICANT, table, year)
@@ -54,7 +56,7 @@ def sort_address_applicant(records, year):
         yield result
 
 
-def save_sorted_info(conn, table, aux_tbl, year, batch_size, dry_run=False):
+def save_collab_info(conn, table, aux_tbl, year, batch_size, dry_run=False):
     flds = [APP_NO, APP_YEAR, COUNTRY, STATE, COLLAB]
     stmt = "INSERT INTO {} ({}) VALUES ({});".format(
         aux_tbl, ",".join(flds), ",".join(["%(" + i + ")s" for i in flds]))
@@ -65,7 +67,52 @@ def save_sorted_info(conn, table, aux_tbl, year, batch_size, dry_run=False):
     with conn.cursor() as cursor:
         logger.debug("executing {}".format(stmt))
         try:
-            for results in gen_patents(conn, table, year, batch_size):
+            for results in gen_collab_data(conn, table, year, batch_size):
+                cursor.executemany(stmt, results)
+            conn.commit()
+        except psycopg2.DatabaseError as e:
+            logger.error("unexpected database error: {}".format(e))
+            return
+
+
+def gen_attrs(conn, table, year, batch_size):
+    stmt = "SELECT {}, {} FROM {} WHERE "\
+           "extract(year from app_date) = {};".format(
+               APP_NO, INT_CL, table, year)
+    with conn.cursor() as cursor:
+        try:
+            logger.debug("executing {}".format(stmt))
+            cursor.execute(stmt)
+            while True:
+                results = cursor.fetchmany(batch_size)
+                if results:
+                    yield sort_ipc(results, year)
+                else:
+                    break
+        except psycopg2.DatabaseError as e:
+            logger.error("unexpected database error: {}".format(e))
+
+
+def sort_ipc(records, year):
+    for record in records:
+        result = {}
+        result[APP_NO], int_cl = record
+        hi_tech, low_tech = patent_parser.parse_int_cl(int_cl)
+        result[ATTRS] = (1 if hi_tech else 0) * 2 + (1 if low_tech else 0)
+        yield result
+
+
+def save_attrs(conn, table, aux_tbl, year, batch_size, dry_run=False):
+    stmt = "UPDATE {} SET {}={} WHERE {}={};".format(
+        aux_tbl, ATTRS, "%(" + ATTRS + ")s", APP_NO, "%(" + APP_NO + ")s")
+    if dry_run:
+        print("executing {}".format(stmt))
+        return
+
+    with conn.cursor() as cursor:
+        logger.debug("executing {}".format(stmt))
+        try:
+            for results in gen_attrs(conn, table, year, batch_size):
                 cursor.executemany(stmt, results)
             conn.commit()
         except psycopg2.DatabaseError as e:
@@ -97,19 +144,33 @@ def main(argv=None):
                       help="size of batch insertion")
     parser.add_option("-l", "--loc-file", dest="loc_file",
                       default="LocList.xml",
-                      help="country/state/city list")
+                      help="country/state/city list file")
     parser.add_option("-U", "--univ-file", dest="univ_file",
                       default="cn_univs.json",
-                      help="chinese univerisity list")
+                      help="chinese univerisity list file")
+    parser.add_option("-i", "--hi-tech-ipc-file", dest="hi_tech_ipc_file",
+                      default="hi_tech_ipcs",
+                      help="hi-tech IPC list file")
+    parser.add_option("-A", "--action", dest="action", default="A",
+                      help="action:C(reate), U(pdate), A(ll)(default)")
     parser.add_option("-n", "--dry-run", action="store_true", dest="dry_run",
                       help="show what would have been done")
     (options, args) = parser.parse_args(argv)
-
-    global patent_parser
-    patent_parser = PatentParser(options.loc_file, options.univ_file)
-
     if len(args) < 1:
         parser.error("missing arguments")
+
+    action = options.action
+    save_methods = [save_collab_info, save_attrs]
+    if action == 'C':
+        save_methods.pop()
+    elif action == 'U':
+        save_methods.pop(0)
+    elif action != 'A':
+        parser.error("unknown action type: {}".format(action))
+
+    global patent_parser
+    patent_parser = PatentParser(options.loc_file, options.univ_file,
+                                 options.hi_tech_ipc_file)
 
     detail_tbl = options.patent_detail_tbl
     aux_tbl = options.patent_aux_tbl
@@ -123,8 +184,9 @@ def main(argv=None):
         for year in args:
             print("processing on patents in year {}".format(year),
                   file=sys.stderr)
-            save_sorted_info(conn, detail_tbl, aux_tbl, year,
-                             batch_size=batch_size, dry_run=dry_run)
+            for save_method in save_methods:
+                save_method(conn, detail_tbl, aux_tbl, year,
+                            batch_size=batch_size, dry_run=dry_run)
     return 0
 
 
