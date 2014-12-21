@@ -9,7 +9,7 @@ bail() {
 }
 
 ## help message
-declare -r HELP_MSG="Usage: $SCRIPT_NAME [OPTION]... d|t|a
+declare -r HELP_MSG="Usage: $SCRIPT_NAME [OPTION]... d|t|a|u
   -h    display this help and exit
   -d    database name
   -p    database password
@@ -19,6 +19,7 @@ declare -r HELP_MSG="Usage: $SCRIPT_NAME [OPTION]... d|t|a
   d     detail table
   t     transaction table
   a     auxiliary table
+  u     UIG table
 "
 
 ## print the usage and exit the shell(default status code: 2)
@@ -104,6 +105,18 @@ create_aux_db() {
 EOF
 }
 
+create_uig_db() {
+    PGPASSWORD=$pwd psql $dbname $username << EOF
+        CREATE TABLE ${tblprefix}uig(
+            uig_id      SERIAL PRIMARY KEY  NOT NULL,
+            app_no      varchar(28) NOT NULL REFERENCES ${tblprefix}detail (app_no),
+            org         varchar(50),
+            state       varchar(10),
+            kind        char(1)
+    );
+EOF
+}
+
 case $1 in
     d)
         create_detail_db;;
@@ -111,6 +124,8 @@ case $1 in
         create_transaction_db;;
     a)
         create_aux_db;;
+    u)
+        create_uig_db;;
     *)
         usage "Invalid argument: $1\n";;
 esac

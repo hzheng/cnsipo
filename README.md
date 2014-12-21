@@ -62,9 +62,25 @@ Please take the following steps(step 1-5 are essential, others are optional):
 
         a table in database
 
-7. collect data into database
+7. collect auxiliary data into database
 
         python cnsipo/patent_aux_db.py -d{database} -u{db_user} -p{password} -t{patent_table} -a{aux_table} {year}
+
+    output:
+
+        data in database
+
+8. create a UIG(university/industry/government) table on a (Postgres) database
+
+        bin/initdb.sh -d{database} -u{db_user} -t{db_table} u
+
+    output:
+
+        a table in database
+
+9. collect UIG data into database
+
+        python cnsipo/patent_uig_db.py -d{database} -u{db_user} -p{password} -i{uig_table} -t{patent_table} -a{aux_table} {year}
 
     output:
 

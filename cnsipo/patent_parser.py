@@ -30,7 +30,7 @@ class PatentParser(object):
     PAREN_PATTERN = re.compile("\((.+)\)")
     CN_ADDR_PATTERN = re.compile("中(国|南)|华(东|南|西|北|中)")
 
-    def __init__(self, local_list_xml, cn_univs_json, hi_tech_ipcs):
+    def __init__(self, local_list_xml, cn_univs_json, hi_tech_ipcs=None):
 
         tree = ET.parse(local_list_xml)
         root = tree.getroot()
@@ -110,9 +110,10 @@ class PatentParser(object):
                 s.encode('utf8'): [u.encode('utf8') for u in univs]
                 for s, univs in univs.iteritems()}
 
-        with open(hi_tech_ipcs) as f:
-            self.ipc_re = re.compile(
-                "|".join([c.strip() for c in f.readlines()]))
+        if hi_tech_ipcs:
+            with open(hi_tech_ipcs) as f:
+                self.ipc_re = re.compile(
+                    "|".join([c.strip() for c in f.readlines()]))
 
     def parse_univ(self, address):
         for state, univs in self.cn_univs.iteritems():
@@ -222,7 +223,7 @@ class PatentParser(object):
 
         logger.warn("unrecognized applicant: {}".format(applicant))
 
-    def parse_applicants(self, applicants, address=None):
+    def parse_applicants(self, applicants, address=None, include_org=False):
         """Parse applicant(s) and return types and states pairs.
         """
         main_country, main_state = self.parse_address(address)
@@ -248,14 +249,22 @@ class PatentParser(object):
                 else:
                     state = self.FOREIGN
             if state:
-                results.append((kind, state))
-            if len(results) > 1:
-                # remove redundants
-                results = list(set(results))
-                if len(results) == 1:
-                    results *= 2
+                if include_org:
+                    appl = appl.decode('utf8').strip(u" 　 ").encode('utf8')
+                    results.append((kind, state, appl))
                 else:
-                    results = sorted(results)
+                    results.append((kind, state))
+
+        if include_org:
+            return results
+
+        if len(results) > 1:
+            # remove redundants
+            results = list(set(results))
+            if len(results) == 1:
+                results *= 2
+            else:
+                results = sorted(results)
 
         return results, main_country, main_state
 
