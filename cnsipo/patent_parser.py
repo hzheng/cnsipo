@@ -80,6 +80,8 @@ class PatentParser(object):
                 self.foreign_state_city_map[country] = state_cities
 
         self.ex_re1 = re.compile("小学|中学|监狱|银行")
+        self.government_re0 = re.compile(
+            "(中国科学院)")
         self.university_re1 = re.compile("(大学|学院|学校)$")
         self.industry_re1 = re.compile(
             "(公司|实业|企业|工业|厂|集团|车间|矿)$")
@@ -121,6 +123,17 @@ class PatentParser(object):
                 if univ in address:
                     return self.MAINLAND, state
         return None, None
+
+    def main_org(self, applicant):
+        matched = self.government_re0.search(applicant)
+        if matched:
+            return matched.group(0)
+
+        for _, univs in self.cn_univs.iteritems():
+            for univ in univs:
+                if univ in applicant:
+                    return univ
+        return applicant
 
     def parse_address(self, address):
         """Parse an address and return country and state
@@ -198,6 +211,8 @@ class PatentParser(object):
             return
 
         applicant = applicant.encode('utf8')
+        if self.government_re0.search(applicant):
+            return self.GOVERNMENT
         if self.university_re1.search(applicant):
             return self.UNIVERSITY
         if self.industry_re1.search(applicant):
@@ -251,7 +266,8 @@ class PatentParser(object):
             if state:
                 if include_org:
                     appl = appl.decode('utf8').strip(u" 　 ").encode('utf8')
-                    results.append((kind, state, appl))
+                    appl2 = self.main_org(appl)
+                    results.append((kind, state, appl, appl2))
                 else:
                     results.append((kind, state))
 

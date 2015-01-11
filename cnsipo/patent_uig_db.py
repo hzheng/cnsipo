@@ -24,6 +24,7 @@ APPLICANT = 'applicant'
 COLLAB = 'collab'
 KIND = 'kind'
 ORG = 'org'
+ORG2 = 'org2'
 patent_parser = None
 
 
@@ -51,10 +52,11 @@ def parse_uig(records, year):
     for record in records:
         result = {}
         result[APP_NO], address, applicants = record
-        for kind, state, appl in patent_parser.parse_applicants(
+        for kind, state, appl, appl2 in patent_parser.parse_applicants(
             applicants, address, True
         ):
             result[ORG] = appl
+            result[ORG2] = appl2
             result[STATE] = state
             result[KIND] = kind
             yield result
@@ -62,7 +64,7 @@ def parse_uig(records, year):
 
 def save_uig_info(conn, uig_tbl, table, aux_tbl, year, batch_size,
                   dry_run=False):
-    flds = [APP_NO, ORG, STATE, KIND]
+    flds = [APP_NO, ORG, ORG2, STATE, KIND]
     stmt = "INSERT INTO {} ({}) VALUES ({});".format(
         uig_tbl, ",".join(flds), ",".join(["%(" + i + ")s" for i in flds]))
     if dry_run:

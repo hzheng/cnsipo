@@ -111,6 +111,7 @@ create_uig_db() {
             uig_id      SERIAL PRIMARY KEY  NOT NULL,
             app_no      varchar(28) NOT NULL REFERENCES ${tblprefix}detail (app_no),
             org         varchar(50),
+            org2        varchar(50),
             state       varchar(10),
             kind        char(1)
     );

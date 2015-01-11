@@ -84,6 +84,19 @@ def test_applicant():
         assert parser.parse_applicants(applicant, address)[0] == types
 
 
+def test_applicant2():
+    applicant_types = [
+        ("中国科学院化学研究所", "100084中科院",
+            [(G, '北京', '中国科学院化学研究所', '中国科学院')]),
+        ("清华大学电子研究院; 鸿富锦精密工业(深圳)有限公司", "100084北京市富士康纳米科技研究中心",
+            [(U, '北京', '清华大学电子研究院', '清华大学'),
+             (I, '广东', '鸿富锦精密工业(深圳)有限公司',
+              '鸿富锦精密工业(深圳)有限公司')]),
+    ]
+    for applicant, address, types in applicant_types:
+        assert parser.parse_applicants(applicant, address, True) == types
+
+
 def test_ipc():
     int_cls = [
         ("", (False, False)),
