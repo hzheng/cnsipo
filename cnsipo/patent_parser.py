@@ -81,7 +81,9 @@ class PatentParser(object):
 
         self.ex_re1 = re.compile("小学|中学|监狱|银行")
         self.government_re0 = re.compile(
-            "(中国科学院)")
+            "(.*科学院)")
+        self.industry_re0 = re.compile(
+            "(.*?公司)")
         self.university_re1 = re.compile("(大学|学院|学校)$")
         self.industry_re1 = re.compile(
             "(公司|实业|企业|工业|厂|集团|车间|矿)$")
@@ -125,6 +127,9 @@ class PatentParser(object):
         return None, None
 
     def main_org(self, applicant):
+        matched = self.industry_re0.search(applicant)
+        if matched:
+            return matched.group(0)
         matched = self.government_re0.search(applicant)
         if matched:
             return matched.group(0)
@@ -211,8 +216,11 @@ class PatentParser(object):
             return
 
         applicant = applicant.encode('utf8')
+        if self.industry_re0.search(applicant):
+            return self.INDUSTRY
         if self.government_re0.search(applicant):
             return self.GOVERNMENT
+
         if self.university_re1.search(applicant):
             return self.UNIVERSITY
         if self.industry_re1.search(applicant):
