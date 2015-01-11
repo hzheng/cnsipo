@@ -86,6 +86,14 @@ Please take the following steps(step 1-5 are essential, others are optional):
 
         data in database
 
+10. print UIG nodes for each year
+
+        python cnsipo/patent_report.py -d{database} -u{db_user} -p{password} -i{uig_table} -a{aux_table} {year} -o {output_dir}
+
+    output:
+
+        {output_dir}/node{year}
+
 
 REFERENCE
 ---------
