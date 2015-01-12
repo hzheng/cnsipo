@@ -255,7 +255,12 @@ class PatentParser(object):
             kind = self.parse_applicant(appl)
             if kind is None:
                 continue
-            country, state = self.parse_address(appl)
+
+            country, state = None, None
+            if self.foreign_industry_re.search(appl):
+                state = self.FOREIGN
+            else:
+                country, state = self.parse_address(appl)
             if state is None:
                 if country is None:
                     if kind == self.UNIVERSITY:
@@ -265,9 +270,6 @@ class PatentParser(object):
                             state = self.FOREIGN
                 elif country != self.MAINLAND:
                     state = self.FOREIGN
-
-            if state is None and self.foreign_industry_re.search(appl):
-                state = self.FOREIGN
 
             # last resort: state from address
             if state is None and main_country:
