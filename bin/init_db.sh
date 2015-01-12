@@ -100,6 +100,7 @@ create_aux_db() {
             country     varchar(20),
             state       varchar(10),
             collab      varchar(40),
+            tech_flds   varchar(10),
             attrs       smallint
     );
 EOF

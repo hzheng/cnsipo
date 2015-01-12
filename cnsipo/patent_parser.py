@@ -297,12 +297,20 @@ class PatentParser(object):
         """
         hi_tech = False
         low_tech = False
+        tech_flds = set()
         for ipc in re.split(";|；| | ", int_cl):
             if not ipc:
                 continue
 
+            fld = ipc[0]
+            if fld not in "ABCDEFGH":
+            # if fld == '/':
+                break
+            tech_flds.add(fld)
             if self.ipc_re.match(ipc):
                 hi_tech = True
             else:
                 low_tech = True
-        return hi_tech, low_tech
+        tech_fld_list = list(tech_flds)
+        tech_fld_list.sort()
+        return hi_tech, low_tech, tech_fld_list

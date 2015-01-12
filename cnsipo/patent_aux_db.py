@@ -25,6 +25,7 @@ APPLICANT = 'applicant'
 INT_CL = 'int_cl'
 COLLAB = 'collab'
 ATTRS = 'attrs'
+TECH_FLDS = 'tech_flds'
 patent_parser = None
 
 
@@ -97,14 +98,15 @@ def sort_ipc(records, year):
     for record in records:
         result = {}
         result[APP_NO], int_cl = record
-        hi_tech, low_tech = patent_parser.parse_int_cl(int_cl)
+        hi_tech, low_tech, fields = patent_parser.parse_int_cl(int_cl)
         result[ATTRS] = (1 if hi_tech else 0) * 2 + (1 if low_tech else 0)
+        result[TECH_FLDS] = "".join(fields)
         yield result
 
 
 def save_attrs(conn, table, aux_tbl, year, batch_size, dry_run=False):
-    stmt = "UPDATE {} SET {}={} WHERE {}={};".format(
-        aux_tbl, ATTRS, "%(" + ATTRS + ")s", APP_NO, "%(" + APP_NO + ")s")
+    stmt = "UPDATE {} SET {}={}, {}={} WHERE {}={};".format(
+        aux_tbl, TECH_FLDS, "%(" + TECH_FLDS + ")s",  ATTRS, "%(" + ATTRS + ")s", APP_NO, "%(" + APP_NO + ")s")
     if dry_run:
         print("executing {}".format(stmt))
         return

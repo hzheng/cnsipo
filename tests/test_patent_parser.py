@@ -104,11 +104,11 @@ def test_applicant2():
 
 def test_ipc():
     int_cls = [
-        ("", (False, False)),
-        ("C12R1/19(2006.01)N", (False, True)),
-        ("C40B40/06(2006.01)I", (True, False)),
-        ("C12R1/19(2006.01)N; C40B40/06(2006.01)I",
-         (True, True)),
+        ("", (False, False, [])),
+        ("C12R1/19(2006.01)N", (False, True, ['C'])),
+        ("C40B40/06(2006.01)I", (True, False, ['C'])),
+        ("C12R1/19(2006.01)N; C40B40/06(2006.01)I; B100",
+         (True, True, ['B', 'C'])),
     ]
     for int_cl, result in int_cls:
         assert parser.parse_int_cl(int_cl) == result
