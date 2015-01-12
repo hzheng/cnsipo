@@ -265,6 +265,10 @@ class PatentParser(object):
                             state = self.FOREIGN
                 elif country != self.MAINLAND:
                     state = self.FOREIGN
+
+            if state is None and self.foreign_industry_re.search(appl):
+                state = self.FOREIGN
+
             # last resort: state from address
             if state is None and main_country:
                 if main_country == self.MAINLAND:
