@@ -278,6 +278,7 @@ class PatentParser(object):
             if state:
                 if include_org:
                     appl = appl.decode('utf8').strip(u" 　 ").encode('utf8')
+                    appl = trans_str(appl, "（）　 ", "()  ")
                     appl2 = self.main_org(appl)
                     results.append((kind, state, appl, appl2))
                 else:
@@ -307,7 +308,7 @@ class PatentParser(object):
                 continue
 
             fld = ipc[0]
-            if fld not in "ABCDEFGH":
+            if fld not in "ABCDEFGH":  # invalid classifications
             # if fld == '/':
                 break
             tech_flds.add(fld)
