@@ -64,6 +64,8 @@ def transaction_parse(bs, kind):
             for i in [0, 2]:
                 key_val[cells[i].get_text().encode('utf-8')] \
                     = cells[i + 1].get_text().encode('utf-8')
+            detail = rows[2].td.get_text(' ').encode('utf-8')
+            key_val['说明'] = detail        
             trans.append(key_val)
     return trans
 
