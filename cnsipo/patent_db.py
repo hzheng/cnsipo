@@ -44,6 +44,7 @@ FIELDS_MAP = [{
     }, {
     u'事务数据公告日': ('pub_date', datetime.date),
     u'事务数据类型': ('data_type', str),
+    u'说明': ('data_type', str),
 }]
 
 FIELDS = [(APP_NO, "name", "inventor", "applicant", "app_date", "app_pub_no",
